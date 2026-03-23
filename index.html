@@ -348,7 +348,7 @@
             position: relative;
             width: 100%;
             max-width: 500px;
-            height: clamp(350px, 60vw, 600px);
+            height: 600px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -356,8 +356,8 @@
         }
 
         #safe {
-            width: clamp(240px, 80vw, 400px);
-            height: clamp(300px, 70vw, 500px);
+            width: 400px;
+            height: 500px;
             background: linear-gradient(145deg, #434343, #2d2d2d);
             border-radius: 15px;
             box-shadow: 
@@ -448,12 +448,12 @@
 
         .scroll {
             position: absolute;
-            width: min(700px, 92vw);
+            width: 700px;
             max-height: 80vh;
             background: linear-gradient(to bottom, #f4e7d7, #e8d7c3);
             border: 2px solid #c9a961;
             border-radius: 8px;
-            padding: clamp(20px, 5vw, 40px) clamp(15px, 4vw, 30px);
+            padding: 40px 30px;
             box-shadow: 
                 0 10px 30px rgba(0,0,0,0.3),
                 inset 0 0 20px rgba(194, 154, 108, 0.2);
@@ -461,8 +461,7 @@
             transform-origin: top center;
             animation: scroll-unroll 1s ease 3.5s forwards;
             left: 50%;
-            transform-origin: top center;
-            translate: -50% 0;
+            margin-left: -350px;
             overflow-y: auto;
         }
 
@@ -878,15 +877,21 @@
             .vocabulary-table-container {
                 max-height: 50vh;
             }
+            
+            .safe-container {
+                max-width: 400px;
+                height: 500px;
+            }
+            
+            #safe {
+                width: 350px;
+                height: 450px;
+            }
         }
 
         @media (max-width: 768px) {
             .app-title {
-                font-size: 32px;
-            }
-
-            .app-subtitle {
-                font-size: 15px;
+                font-size: 36px;
             }
             
             .vocabulary-table input {
@@ -898,107 +903,16 @@
                 font-size: 13px;
                 padding: 10px 8px;
             }
-
+            
+            #safe {
+                width: 300px;
+                height: 400px;
+            }
+            
             .lock {
-                width: 36px;
-                height: 36px;
-                font-size: 14px;
-            }
-
-            .game-panel {
-                padding: 20px 15px;
-            }
-
-            .game-word {
-                font-size: 26px;
-                padding: 12px;
-            }
-
-            .game-input {
-                font-size: 17px;
-                padding: 12px;
-            }
-
-            .submit-button {
+                width: 40px;
+                height: 40px;
                 font-size: 16px;
-                padding: 12px 28px;
-            }
-
-            .scroll-title {
-                font-size: 22px;
-            }
-
-            .scroll-words h3 {
-                font-size: 15px;
-            }
-
-            .excel-cell {
-                padding: 7px 8px;
-                font-size: 13px;
-            }
-
-            .scroll-button {
-                min-width: 0;
-                width: 100%;
-                font-size: 14px;
-                padding: 10px 15px;
-            }
-
-            .button-container {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .start-game-button {
-                font-size: 16px;
-                padding: 13px 28px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .main-container {
-                padding: 10px;
-                gap: 10px;
-            }
-
-            .left-section,
-            .right-section {
-                padding: 10px;
-            }
-
-            .app-title {
-                font-size: 28px;
-            }
-
-            .lang-switcher {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .lang-btn {
-                font-size: 11px;
-                padding: 5px 8px;
-            }
-
-            .hero-czech {
-                font-size: 15px;
-            }
-
-            .instructions p {
-                font-size: 13px;
-            }
-
-            .vocabulary-panel {
-                padding: 10px 10px 15px;
-            }
-
-            .game-word {
-                font-size: 22px;
-                min-height: 40px;
-            }
-
-            .safe-container {
-                height: clamp(280px, 75vw, 400px);
             }
         }
     </style>
