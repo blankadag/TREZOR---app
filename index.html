@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">TREZOR — Interaktivní učení slovíček — 10+ jazykových modulů</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
+        .main-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+            gap: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .left-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .app-title {
+            font-size: 48px;
+            color: #ecf0f1;
+            margin: 0 0 10px 0;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .app-subtitle {
+            font-size: 18px;
+            color: #d0d3ff;
+            margin: 0 0 30px 0;
+            text-align: center;
+        }
+
+        .hero-czech {
+            font-size: clamp(17px, 2.4vw, 26px);
+            font-weight: 800;
+            color: #f4e7d7;
+            text-align: center;
+            margin: 0 0 16px 0;
+            line-height: 1.35;
+            letter-spacing: 0.02em;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+            max-width: 920px;
+        }
+
+        .lang-switcher {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            margin: 0 0 24px 0;
+            padding: 0 4px 6px;
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+
+        .lang-switcher::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .lang-switcher::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 4px;
+        }
+
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 4px 7px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.25);
+            color: #ecf0f1;
+            font-size: clamp(10px, 1.65vw, 12px);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s, transform 0.15s;
+            flex-shrink: 0;
+            white-space: nowrap;
+            line-height: 1.2;
+        }
+
+        .lang-btn:hover {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .lang-btn.active {
+            border-color: #27ae60;
+            background: rgba(39, 174, 96, 0.35);
+            box-shadow: 0 0 0 1px rgba(39, 174, 96, 0.45);
+        }
+
+        .instructions {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 900px;
+            color: #2c3e50;
+        }
+
+        .instructions p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+
+        .vocabulary-panel {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+            padding: 16px 16px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .vocabulary-table-container {
+            width: 100%;
+            max-height: 70vh;
+            overflow-y: auto;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: white;
+        }
+
+        .vocabulary-table-container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .vocabulary-table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .vocabulary-table-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #3498db, #2980b9);
+            border-radius: 10px;
+        }
+
+        .vocabulary-table-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #2980b9, #21618c);
+        }
+
+        .vocabulary-table {
+            width: 100%;
+            max-width: none;
+            background: white;
+            border-radius: 12px;
+            border-collapse: collapse;
+            overflow: hidden;
+        }
+
+        .vocabulary-table th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            font-weight: bold;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .vocabulary-table td {
+            padding: 8px;
+            border-bottom: 1px solid #ecf0f1;
+            background: #ffffff;
+        }
+
+        .vocabulary-table th:nth-child(1),
+        .vocabulary-table td:nth-child(1) {
+            width: 47%;
+        }
+
+        .vocabulary-table th:nth-child(2),
+        .vocabulary-table td:nth-child(2) {
+            width: 47%;
+        }
+
+        .vocabulary-table th:nth-child(3),
+        .vocabulary-table td:nth-child(3) {
+            width: 6%;
+            text-align: center;
+            padding: 8px 4px;
+        }
+
+        .vocabulary-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .vocabulary-table input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            line-height: 1.4;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .vocabulary-table input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .vocabulary-table input::placeholder {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .remove-row {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.2s, filter 0.2s;
+        }
+
+        .remove-row:hover {
+            transform: scale(1.2);
+            filter: brightness(0.8);
+        }
+
+        .table-controls {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        .add-row-button {
+            padding: 10px 20px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: auto;
+        }
+
+        .add-row-button:hover:not(:disabled) {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .add-row-button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .row-counter {
+            font-size: 13px;
+            color: #d0d3ff;
+            margin-top: 5px;
+        }
+
+        .paste-hint {
+            margin-top: -5px;
+            font-size: 12px;
+            color: #d0d3ff;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        .start-game-button {
+            padding: 15px 40px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: auto;
+        }
+
+        .start-game-button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .start-game-button:hover:not(:disabled) {
+            background: #229954;
+            transform: scale(1.03);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .validation-message {
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .validation-message.error {
+            color: #e74c3c;
+        }
+
+        .validation-message.success {
+            color: #27ae60;
+        }
+
+        /* TREZOR A ZÁMKY */
+        .safe-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        #safe {
+            width: 400px;
+            height: 500px;
+            background: linear-gradient(145deg, #434343, #2d2d2d);
+            border-radius: 15px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.5),
+                inset 0 2px 0 rgba(255,255,255,0.1),
+                inset 0 -2px 0 rgba(0,0,0,0.3);
+            position: relative;
+            border: 3px solid #1a1a1a;
+        }
+
+        .safe-door {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #434343, #2d2d2d);
+            border-radius: 15px;
+            transform-origin: left center;
+            transition: transform 2s ease-in-out;
+            border: 3px solid #1a1a1a;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.5),
+                inset 0 2px 0 rgba(255,255,255,0.1),
+                inset 0 -2px 0 rgba(0,0,0,0.3);
+        }
+
+        .safe-door.open {
+            transform: perspective(1200px) rotateY(-105deg);
+        }
+
+        .safe-handle {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #888, #555);
+            border-radius: 50%;
+            box-shadow: 
+                0 4px 8px rgba(0,0,0,0.5),
+                inset 0 2px 4px rgba(255,255,255,0.3);
+        }
+
+        .safe-interior {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 1s ease 1.5s;
+        }
+
+        .safe-door.open ~ .safe-interior {
+            opacity: 1;
+        }
+
+        /* PERGAMEN */
+        .scroll-container {
+            position: relative;
+            width: 80px;
+            height: 100px;
+            animation: scroll-emerge 1.5s ease 2s forwards;
+            opacity: 0;
+        }
+
+        @keyframes scroll-emerge {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.3);
+            }
+            60% {
+                opacity: 1;
+                transform: translateY(-50px) scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(-150px) scale(1);
+            }
+        }
+
+        .scroll {
+            position: absolute;
+            width: 700px;
+            max-height: 80vh;
+            background: linear-gradient(to bottom, #f4e7d7, #e8d7c3);
+            border: 2px solid #c9a961;
+            border-radius: 8px;
+            padding: 40px 30px;
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.3),
+                inset 0 0 20px rgba(194, 154, 108, 0.2);
+            transform: scaleY(0);
+            transform-origin: top center;
+            animation: scroll-unroll 1s ease 3.5s forwards;
+            left: 50%;
+            margin-left: -350px;
+            overflow-y: auto;
+        }
+
+        @keyframes scroll-unroll {
+            0% {
+                transform: scaleY(0);
+            }
+            100% {
+                transform: scaleY(1);
+            }
+        }
+
+        .scroll::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: linear-gradient(to bottom, 
+                rgba(139, 90, 43, 0.3),
+                transparent);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .scroll-content {
+            opacity: 0;
+            animation: fade-in 0.8s ease 4.5s forwards;
+            color: #3d2817;
+        }
+
+        @keyframes fade-in {
+            to { opacity: 1; }
+        }
+
+        .scroll-title {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #8b5a2b;
+            font-family: 'Georgia', serif;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .scroll-subtitle {
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 25px;
+            color: #6b4423;
+            font-style: italic;
+        }
+
+        .scroll-words {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #c9a961;
+        }
+
+        .scroll-words h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #8b5a2b;
+            font-family: 'Georgia', serif;
+            text-align: center;
+        }
+
+        /* Excel-like tabulka pro kopírování */
+        .excel-table {
+            margin: 20px auto;
+            max-width: 500px;
+            border: 2px solid #8b5a2b;
+            border-radius: 4px;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+
+        .excel-header {
+            display: grid;
+            grid-template-columns: 48px 1fr 1fr;
+            background: #8b5a2b;
+            color: #f4e7d7;
+            font-weight: bold;
+        }
+
+        .excel-row {
+            display: grid;
+            grid-template-columns: 48px 1fr 1fr;
+            border-top: 1px solid #c9a961;
+        }
+
+        .excel-cell-speak {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 4px !important;
+        }
+
+        .speak-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border: 2px solid #8b5a2b;
+            border-radius: 8px;
+            background: #f4e7d7;
+            color: #6b4423;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+        }
+
+        .speak-btn:hover {
+            background: #fff;
+            transform: scale(1.06);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .speak-btn:active {
+            transform: scale(0.98);
+        }
+
+        .speak-btn:focus-visible {
+            outline: 2px solid #27ae60;
+            outline-offset: 2px;
+        }
+
+        .excel-row:hover {
+            background: rgba(139, 90, 43, 0.1);
+        }
+
+        .excel-cell {
+            padding: 10px 15px;
+            border-right: 1px solid #c9a961;
+            text-align: left;
+            user-select: text;
+        }
+
+        .excel-cell:last-child {
+            border-right: none;
+        }
+
+        .copy-hint {
+            text-align: center;
+            font-size: 12px;
+            color: #6b4423;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .copy-button {
+            display: block;
+            margin: 15px auto 10px;
+            padding: 10px 20px;
+            background: #27ae60;
+            color: white;
+            border: 2px solid #229954;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .copy-button:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Kontejner pro tlačítka */
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .scroll-button {
+            padding: 12px 25px;
+            color: #f4e7d7;
+            border: 2px solid #6b4423;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 0 1 auto;
+            min-width: 200px;
+        }
+
+        .repeat-button {
+            background: #3498db;
+            border-color: #2980b9;
+        }
+
+        .repeat-button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .new-button {
+            background: #27ae60;
+            border-color: #229954;
+        }
+
+        .new-button:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .lock {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+            transition: all 0.5s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .lock.locked {
+            background: #e74c3c;
+        }
+
+        .lock.unlocked {
+            background: #27ae60;
+            animation: unlock-pop 0.5s ease;
+        }
+
+        @keyframes unlock-pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        /* ===== HERNÍ PANEL ===== */
+        .game-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            animation: slideInRight 0.6s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .game-word {
+            font-size: 36px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .game-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+
+        .game-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .game-input.correct {
+            border-color: #27ae60;
+            background: #eafaf1;
+            animation: flash-green 0.5s;
+        }
+
+        .game-input.incorrect {
+            border-color: #e74c3c;
+            background: #fadbd8;
+            animation: shake 0.5s;
+        }
+
+        @keyframes flash-green {
+            0%, 100% { background: white; }
+            50% { background: #d5f4e6; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .submit-button {
+            padding: 15px 40px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        .feedback-message {
+            margin-top: 15px;
+            font-size: 16px;
+            min-height: 25px;
+            font-weight: 500;
+        }
+
+        .feedback-message.correct {
+            color: #27ae60;
+        }
+
+        .feedback-message.incorrect {
+            color: #e74c3c;
+        }
+
+        .left-section.hidden {
+            display: none;
+        }
+
+        .right-section.game-mode {
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .right-section.game-mode .safe-container {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .right-section.game-mode .game-panel {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        @media (max-width: 600px) {
+            .excel-table {
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 1200px) {
+            .right-section.game-mode {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .right-section.game-mode .game-panel {
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .left-section,
+            .right-section {
+                width: 100%;
+                flex: none;
+            }
+            
+            .vocabulary-table-container {
+                max-height: 50vh;
+            }
+            
+            .safe-container {
+                max-width: 400px;
+                height: 500px;
+            }
+            
+            #safe {
+                width: 350px;
+                height: 450px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-title {
+                font-size: 36px;
+            }
+            
+            .vocabulary-table input {
+                font-size: 13px;
+                padding: 8px 10px;
+            }
+            
+            .vocabulary-table th {
+                font-size: 13px;
+                padding: 10px 8px;
+            }
+            
+            #safe {
+                width: 300px;
+                height: 400px;
+            }
+            
+            .lock {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="left-section">
+            <p class="hero-czech">OTEVŘI TREZOR DÍKY SVÝM JAZYKOVÝM ZNALOSTEM</p>
+
+            <div class="lang-switcher" role="group" aria-label="Learning language">
+                <!-- Pořadí: frekvence mluvčích (EN první, dále sestupně mezi nabízenými jazyky) -->
+                <button type="button" class="lang-btn" data-lang="en" title="British English">🇬🇧 EN</button>
+                <button type="button" class="lang-btn" data-lang="us" title="American English">🇺🇸 EN</button>
+                <button type="button" class="lang-btn" data-lang="es" title="Español">🇪🇸 ES</button>
+                <button type="button" class="lang-btn" data-lang="fr" title="Français">🇫🇷 FR</button>
+                <button type="button" class="lang-btn" data-lang="pt" title="Português">🇵🇹 PT</button>
+                <button type="button" class="lang-btn" data-lang="ru" title="Русский">🇷🇺 RU</button>
+                <button type="button" class="lang-btn" data-lang="de" title="Deutsch">🇩🇪 DE</button>
+                <button type="button" class="lang-btn" data-lang="it" title="Italiano">🇮🇹 IT</button>
+                <button type="button" class="lang-btn" data-lang="pl" title="Polski">🇵🇱 PL</button>
+                <button type="button" class="lang-btn" data-lang="uk" title="Українська">🇺🇦 UA</button>
+                <button type="button" class="lang-btn" data-lang="sv" title="Svenska">🇸🇪 SV</button>
+            </div>
+
+            <h1 class="app-title">🔐 TREZOR</h1>
+            <p class="app-subtitle" id="app-subtitle">Interactive language learning game</p>
+            
+            <div class="instructions">
+                <p id="instructions-text">What words and phrases do you want to learn?</p>
+            </div>
+
+            <div class="vocabulary-panel">
+                <div class="vocabulary-table-container">
+                    <table class="vocabulary-table">
+                        <thead>
+                            <tr>
+                                <th id="vocab-th-foreign">English</th>
+                                <th>Česky</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="vocab-rows">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-controls">
+                    <button id="add-row-btn" class="add-row-button">
+                        ➕ Add row
+                    </button>
+                    <div class="row-counter" id="row-counter">(0/12 rows)</div>
+                    <div class="paste-hint" id="paste-hint">Tip: paste 2-column data from Excel (English + TAB + Česky).</div>
+
+                    <button id="start-game-button" class="start-game-button" disabled>
+                        Start game
+                    </button>
+                    <div id="validation-message" class="validation-message error">
+                        Fill in at least one word pair (foreign language and Česky).
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-section">
+            <div class="safe-container">
+                <div id="safe">
+                    <div class="safe-door" id="safe-door">
+                        <div class="safe-handle"></div>
+                    </div>
+                    <div class="safe-interior">
+                        <div class="scroll-container" id="scroll-container" style="display: none;">
+                            <div class="scroll" id="scroll">
+                                <div class="scroll-content" id="scroll-content">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="game-panel" class="game-panel" style="display: none;">
+                <div class="game-word" id="game-word">word</div>
+                <input type="text" 
+                       id="game-input" 
+                       class="game-input" 
+                       placeholder="Type the translation..." 
+                       autocomplete="off" />
+                <button id="submit-answer" class="submit-button">Submit</button>
+                <div id="feedback-message" class="feedback-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const I18N = {
+            en: {
+                pageTitle: 'TREZOR — Language learning',
+                subtitle: 'Interactive language learning game',
+                instructions: 'What words and phrases do you want to learn?',
+                foreignColumn: 'English',
+                pasteTip: 'Tip: paste 2-column data from Excel (English + TAB + Česky).',
+                addRow: '➕ Add row',
+                rows: 'rows',
+                startGame: 'Start game',
+                validationEmpty: 'Fill in at least one word pair (foreign language and Česky).',
+                validationReady: 'Ready ✓ ({count} words)',
+                placeholderForeign: 'English',
+                placeholderCzech: 'Česky',
+                gamePlaceholder: 'Type the translation...',
+                submit: 'Submit',
+                alertNoWords: 'Please fill in at least one word pair!',
+                correctFeedback: '✅ Correct!',
+                incorrectFeedback: '❌ Correct: {answer}',
+                scrollTitle: '🎉 Congratulations! 🎉',
+                scrollSubtitle: 'You have unlocked the safe box of knowledge.<br>Enjoy your success!',
+                vocabMastered: '📚 Vocabulary just mastered:',
+                copyExcel: '📋 Copy to clipboard for Excel',
+                copySuccess: '✅ Copied! You can paste into Excel (Ctrl+V)',
+                copyFail: '❌ Copy failed. Try manually.',
+                repeatGame: '🔄 Repeat with the same vocabulary',
+                newGame: '✨ New game',
+                removeRowTitle: 'Remove row',
+                speakTitle: 'Listen to pronunciation',
+                speakAria: 'Play pronunciation'
+            },
+            us: {
+                pageTitle: 'TREZOR — Language learning',
+                subtitle: 'Interactive language learning game',
+                instructions: 'What words and phrases do you want to learn?',
+                foreignColumn: 'English',
+                pasteTip: 'Tip: paste 2-column data from Excel (English + TAB + Česky).',
+                addRow: '➕ Add row',
+                rows: 'rows',
+                startGame: 'Start game',
+                validationEmpty: 'Fill in at least one word pair (foreign language and Česky).',
+                validationReady: 'Ready ✓ ({count} words)',
+                placeholderForeign: 'English',
+                placeholderCzech: 'Česky',
+                gamePlaceholder: 'Type the translation...',
+                submit: 'Submit',
+                alertNoWords: 'Please fill in at least one word pair!',
+                correctFeedback: '✅ Correct!',
+                incorrectFeedback: '❌ Correct: {answer}',
+                scrollTitle: '🎉 Congratulations! 🎉',
+                scrollSubtitle: 'You have unlocked the safe box of knowledge.<br>Enjoy your success!',
+                vocabMastered: '📚 Vocabulary just mastered:',
+                copyExcel: '📋 Copy to clipboard for Excel',
+                copySuccess: '✅ Copied! You can paste into Excel (Ctrl+V)',
+                copyFail: '❌ Copy failed. Try manually.',
+                repeatGame: '🔄 Repeat with the same vocabulary',
+                newGame: '✨ New game',
+                removeRowTitle: 'Remove row',
+                speakTitle: 'Listen to pronunciation',
+                speakAria: 'Play pronunciation'
+            },
+            de: {
+                pageTitle: 'TREZOR — Sprachen lernen',
+                subtitle: 'Interaktives Sprachlernspiel',
+                instructions: 'Welche Wörter und Redewendungen möchtest du lernen?',
+                foreignColumn: 'Deutsch',
+                pasteTip: 'Tipp: Excel-Daten aus zwei Spalten einfügen (Deutsch + TAB + Česky).',
+                addRow: '➕ Zeile hinzufügen',
+                rows: 'Zeilen',
+                startGame: 'Spiel starten',
+                validationEmpty: 'Fülle mindestens ein Wortpaar aus (Fremdsprache und Česky).',
+                validationReady: 'Bereit ✓ ({count} Wörter)',
+                placeholderForeign: 'Deutsch',
+                placeholderCzech: 'Česky',
+                gamePlaceholder: 'Übersetzung eingeben...',
+                submit: 'Antwort',
+                alertNoWords: 'Bitte mindestens ein Wortpaar ausfüllen!',
+                correctFeedback: '✅ Richtig!',
+                incorrectFeedback: '❌ Richtig: {answer}',
+                scrollTitle: '🎉 Glückwunsch! 🎉',
+                scrollSubtitle: 'Du hast den Tresor des Wissens geöffnet.<br>Viel Freude am Erfolg!',
+                vocabMastered: '📚 Gemeisterte Vokabeln:',
+                copyExcel: '📋 Für Excel in die Zwischenablage kopieren',
+                copySuccess: '✅ Kopiert! In Excel einfügen (Strg+V)',
+                copyFail: '❌ Kopieren fehlgeschlagen. Bitte manuell versuchen.',
+                repeatGame: '🔄 Mit demselben Wortschatz wiederholen',
+                newGame: '✨ Neues Spiel',
+                removeRowTitle: 'Zeile entfernen',
+                speakTitle: 'Aussprache anhören',
+                speakAria: 'Aussprache abspielen'
+            },
+            es: {
+                pageTitle: 'TREZOR — Aprende idiomas',
+                subtitle: 'Juego interactivo de aprendizaje de idiomas',
+                instructions: '¿Qué palabras y frases quieres aprender?',
+                foreignColumn: 'Español',
+                pasteTip: 'Consejo: pegar datos de Excel en dos columnas (Español + TAB + Česky).',
+                addRow: '➕ Añadir fila',
+                rows: 'filas',
+                startGame: 'Comenzar juego',
+                validationEmpty: 'Completa al menos un par de palabras (idioma extranjero y Česky).',
+                validationReady: 'Listo ✓ ({count} palabras)',
+                placeholderForeign: 'Español',
+                placeholderCzech: 'Česky',
+                gamePlaceholder: 'Escribe la traducción...',
+                submit: 'Enviar',
+                alertNoWords: '¡Completa al menos un par de palabras!',
+                correctFeedback: '✅ ¡Correcto!',
+                incorrectFeedback: '❌ Correcto: {answer}',
+                scrollTitle: '🎉 ¡Enhorabuena! 🎉',
+                scrollSubtitle: 'Has abierto la caja fuerte del conocimiento.<br>¡Disfruta de tu éxito!',
+                vocabMastered: '📚 Vocabulario recién dominado:',
+                copyExcel: '📋 Copiar al portapapeles para Excel',
+                copySuccess: '✅ ¡Copiado! Puedes pegar en Excel (Ctrl+V)',
+                copyFail: '❌ Error al copiar. Prueba manualmente.',
+                repeatGame: '🔄 Repetir con el mismo vocabulario',
+                newGame: '✨ Nuevo juego',
+                removeRowTitle: 'Quitar fila',
+                speakTitle: 'Escuchar pronunciación',
+                speakAria: 'Reproducir pronunciación'
+            },
+            fr: {
+                pageTitle: 'TREZOR — Apprentissage des langues',
+                subtitle: 'Jeu interactif d\'apprentissage des langues',
+                instructions: 'Quels mots et expressions veux-tu apprendre ?',
+                foreignColumn: 'Français',
+                pasteTip: 'Astuce : collez des données Excel sur deux colonnes (Français + TAB + Česky).',
+                addRow: '➕ Ajouter une ligne',
+                rows: 'lignes',
+                startGame: 'Lancer le jeu',
+                validationEmpty: 'Remplis au moins une paire de mots (langue étrangère et Česky).',
+                validationReady: 'Prêt ✓ ({count} mots)',
+                placeholderForeign: 'Français',
+                placeholderCzech: 'Česky',
+                gamePlaceholder: 'Saisis la traduction...',
+                submit: 'Valider',
+                alertNoWords: 'Merci de remplir au moins une paire de mots !',
+                correctFeedback: '✅ Correct !',
+                incorrectFeedback: '❌ Bonne réponse : {answer}',
+                scrollTitle: '🎉 Félicitations ! 🎉',
+                scrollSubtitle: 'Tu as ouvert le coffre du savoir.<br>Profite de ta réussite !',
+                vocabMastered: '📚 Vocabulaire maîtrisé :',
+                copyExcel: '📋 Copier dans le presse-papiers pour Excel',
+                copySuccess: '✅ Copié ! Tu peux coller dans Excel (Ctrl+V)',
+                copyFail: '❌ Échec de la copie. Essaie manuellement.',
+                repeatGame: '🔄 Rejouer avec le même vocabulaire',
+                newGame: '✨ Nouvelle partie',
+                removeRowTitle: 'Supprimer la ligne',
+                speakTitle: 'Écouter la prononciation',
+                speakAria: 'Lire la prononciation'
+            },
+            ru: {
+                pageTitle: 'TREZOR — Изучение языков',
+                subtitle: 'Интерактивная игра для изучения языков',
+                instructions: 'Какие слова и выражения ты хочешь выучить?',
+                foreignColumn: 'Русский',
+                pasteTip: 'Совет: вставьте двухколоночные данные из Excel (Русский + TAB + Česky).',
+                addRow: '➕ Добавить строку',
+                rows: 'строк',
+                startGame: 'Начать игру',
+                validationEmpty: 'Заполните хотя бы одну пару слов (иностранный язык и Česky).',
+                validationReady: 'Готово ✓ ({count} слов)',
+                placeholderForeign: 'Русский',
+                placeholderCzech: 'Česky',
+                gamePlaceholder: 'Введите перевод...',
+                submit: 'Ответить',
+                alertNoWords: 'Заполните хотя бы одну пару слов!',
+                correctFeedback: '✅ Верно!',
+                incorrectFeedback: '❌ Правильно: {answer}',
+                scrollTitle: '🎉 Поздравляем! 🎉',
+                scrollSubtitle: 'Ты открыл сейф знаний.<br>Наслаждайся успехом!',
+                vocabMastered: '📚 Освоенный словарь:',
+                copyExcel: '📋 Копировать в буфер для Excel',
+                copySuccess: '✅ Скопировано! Вставьте в Excel (Ctrl+V)',
+                copyFail: '❌ Не удалось скопировать. Попробуйте вручную.',
+                repeatGame: '🔄 Повторить с тем же словарём',
+                newGame: '✨ Новая игра',
+                removeRowTitle: 'Удалить строку',
+                speakTitle: 'Прослушать произношение',
+                speakAria: 'Воспроизвести произношение'
+            },
+            it: {
+                pageTitle: 'TREZOR — Impara le lingue',
+                subtitle: 'Gioco interattivo per l\'apprendimento delle lingue',
+                instructions: 'Quali parole ed espressioni vuoi imparare?',
+                foreignColumn: 'Italiano',
+                pasteTip: 'Suggerimento: incolla dati Excel da due colonne (Italiano + TAB + Česky).',
+                addRow: '➕ Aggiungi riga',
+                rows: 'righe',
+                startGame: 'Inizia gioco',
+                validationEmpty: 'Compila almeno una coppia di parole (lingua straniera e Česky).',
+                validationReady: 'Pronto ✓ ({count} parole)',
+                placeholderForeign: 'Italiano',
+                placeholderCzech: 'Česky',
+                gamePlaceholder: 'Scrivi la traduzione...',
+                submit: 'Invia',
+                alertNoWords: 'Compila almeno una coppia di parole!',
+                correctFeedback: '✅ Corretto!',
+                incorrectFeedback: '❌ Corretto: {answer}',
+                scrollTitle: '🎉 Congratulazioni! 🎉',
+                scrollSubtitle: 'Hai sbloccato la cassaforte della conoscenza.<br>Goditi il successo!',
+                vocabMastered: '📚 Vocabolario appena padroneggiato:',
+                copyExcel: '📋 Copia negli appunti per Excel',
+                copySuccess: '✅ Copiato! Puoi incollare in Excel (Ctrl+V)',
+                copyFail: '❌ Copia non riuscita. Prova manualmente.',
+                repeatGame: '🔄 Ripeti con lo stesso vocabolario',
+                newGame: '✨ Nuova partita',
+                removeRowTitle: 'Rimuovi riga',
+                speakTitle: 'Ascolta la pronuncia',
+                speakAria: 'Riproduci pronuncia'
+            },
+            sv: {
+                pageTitle: 'TREZOR — Lär dig språk',
+                subtitle: 'Interaktivt språkinlärningsspel',
+                instructions: 'Vilka ord och fraser vill du lära dig?',
+                foreignColumn: 'Svenska',
+                pasteTip: 'Tips: klistra in två kolumner från Excel (Svenska + TAB + Česky).',
+                addRow: '➕ Lägg till rad',
+                rows: 'rader',
+                startGame: 'Starta spelet',
+                validationEmpty: 'Fyll i minst ett ordpar (främmande språk och Česky).',
+                validationReady: 'Klart ✓ ({count} ord)',
+                placeholderForeign: 'Svenska',
+                placeholderCzech: 'Česky',
+                gamePlaceholder: 'Skriv översättningen...',
+                submit: 'Svara',
+                alertNoWords: 'Fyll i minst ett ordpar!',
+                correctFeedback: '✅ Rätt!',
+                incorrectFeedback: '❌ Rätt: {answer}',
+                scrollTitle: '🎉 Grattis! 🎉',
+                scrollSubtitle: 'Du har öppnat kunskapens kassaskåp.<br>Njut av din framgång!',
+                vocabMastered: '📚 Nyss behärskad ordlista:',
+                copyExcel: '📋 Kopiera till urklipp för Excel',
+                copySuccess: '✅ Kopierat! Du kan klistra in i Excel (Ctrl+V)',
+                copyFail: '❌ Kopiering misslyckades. Försök manuellt.',
+                repeatGame: '🔄 Upprepa med samma ordförråd',
+                newGame: '✨ Nytt spel',
+                removeRowTitle: 'Ta bort rad',
+                speakTitle: 'Lyssna på uttal',
+                speakAria: 'Spela upp uttal'
+            },
+            pt: {
+                pageTitle: 'TREZOR — Aprende línguas',
+                subtitle: 'Jogo interativo de aprendizagem de línguas',
+                instructions: 'Que palavras e expressões queres aprender?',
+                foreignColumn: 'Português',
+                pasteTip: 'Dica: cola dados de duas colunas do Excel (Português + TAB + Česky).',
+                addRow: '➕ Adicionar linha',
+                rows: 'linhas',
+                startGame: 'Começar jogo',
+                validationEmpty: 'Preenche pelo menos um par de palavras (língua estrangeira e Česky).',
+                validationReady: 'Pronto ✓ ({count} palavras)',
+                placeholderForeign: 'Português',
+                placeholderCzech: 'Česky',
+                gamePlaceholder: 'Escreve a tradução...',
+                submit: 'Enviar',
+                alertNoWords: 'Preenche pelo menos um par de palavras!',
+                correctFeedback: '✅ Correto!',
+                incorrectFeedback: '❌ Correto: {answer}',
+                scrollTitle: '🎉 Parabéns! 🎉',
+                scrollSubtitle: 'Abriste o cofre do conhecimento.<br>Aproveita o teu sucesso!',
+                vocabMastered: '📚 Vocabulário recém-dominado:',
+                copyExcel: '📋 Copiar para a área de transferência para Excel',
+                copySuccess: '✅ Copiado! Podes colar no Excel (Ctrl+V)',
+                copyFail: '❌ Falha ao copiar. Tenta manualmente.',
+                repeatGame: '🔄 Repetir com o mesmo vocabulário',
+                newGame: '✨ Novo jogo',
+                removeRowTitle: 'Remover linha',
+                speakTitle: 'Ouvir pronúncia',
+                speakAria: 'Reproduzir pronúncia'
+            },
+            pl: {
+                pageTitle: 'TREZOR — Ucz się języków',
+                subtitle: 'Interaktywna gra do nauki języków',
+                instructions: 'Jakich słów i zwrotów chcesz się nauczyć?',
+                foreignColumn: 'Polski',
+                pasteTip: 'Wskazówka: wklej dane z Excela w dwóch kolumnach (Polski + TAB + Česky).',
+                addRow: '➕ Dodaj wiersz',
+                rows: 'wierszy',
+                startGame: 'Rozpocznij grę',
+                validationEmpty: 'Uzupełnij co najmniej jedną parę słów (język obcy i Česky).',
+                validationReady: 'Gotowe ✓ ({count} słów)',
+                placeholderForeign: 'Polski',
+                placeholderCzech: 'Česky',
+                gamePlaceholder: 'Wpisz tłumaczenie...',
+                submit: 'Odpowiedz',
+                alertNoWords: 'Uzupełnij co najmniej jedną parę słów!',
+                correctFeedback: '✅ Dobrze!',
+                incorrectFeedback: '❌ Poprawnie: {answer}',
+                scrollTitle: '🎉 Gratulacje! 🎉',
+                scrollSubtitle: 'Otworzyłeś sejf wiedzy.<br>Ciesz się sukcesem!',
+                vocabMastered: '📚 Opanowane słownictwo:',
+                copyExcel: '📋 Kopiuj do schowka dla Excela',
+                copySuccess: '✅ Skopiowano! Możesz wkleić w Excelu (Ctrl+V)',
+                copyFail: '❌ Kopiowanie nie powiodło się. Spróbuj ręcznie.',
+                repeatGame: '🔄 Powtórz z tym samym słownictwem',
+                newGame: '✨ Nowa gra',
+                removeRowTitle: 'Usuń wiersz',
+                speakTitle: 'Posłuchaj wymowy',
+                speakAria: 'Odtwórz wymowę'
+            },
+            uk: {
+                pageTitle: 'TREZOR — Вивчення мов',
+                subtitle: 'Інтерактивна гра для вивчення мов',
+                instructions: 'Які слова та вирази ти хочеш вивчити?',
+                foreignColumn: 'Українська',
+                pasteTip: 'Порада: вставте двоколонкові дані з Excel (Українська + TAB + Česky).',
+                addRow: '➕ Додати рядок',
+                rows: 'рядків',
+                startGame: 'Почати гру',
+                validationEmpty: 'Заповни хоча б одну пару слів (іноземна мова та Česky).',
+                validationReady: 'Готово ✓ ({count} слів)',
+                placeholderForeign: 'Українська',
+                placeholderCzech: 'Česky',
+                gamePlaceholder: 'Введи переклад...',
+                submit: 'Відповісти',
+                alertNoWords: 'Заповни хоча б одну пару слів!',
+                correctFeedback: '✅ Вірно!',
+                incorrectFeedback: '❌ Правильно: {answer}',
+                scrollTitle: '🎉 Вітаємо! 🎉',
+                scrollSubtitle: 'Ти відкрив сейф знань.<br>Насолоджуйся успіхом!',
+                vocabMastered: '📚 Опанована лексика:',
+                copyExcel: '📋 Скопіювати в буфер для Excel',
+                copySuccess: '✅ Скопійовано! Встав у Excel (Ctrl+V)',
+                copyFail: '❌ Не вдалося скопіювати. Спробуй вручну.',
+                repeatGame: '🔄 Повторити з тим самим словником',
+                newGame: '✨ Нова гра',
+                removeRowTitle: 'Видалити рядок',
+                speakTitle: 'Послухати вимову',
+                speakAria: 'Відтворити вимову'
+            }
+        };
+
+        const SPEECH_LANG = {
+            en: 'en-GB',
+            us: 'en-US',
+            de: 'de-DE',
+            es: 'es-ES',
+            fr: 'fr-FR',
+            ru: 'ru-RU',
+            it: 'it-IT',
+            sv: 'sv-SE',
+            pt: 'pt-PT',
+            pl: 'pl-PL',
+            uk: 'uk-UA'
+        };
+
+        let currentLang = 'en';
+
+        function getStrings() {
+            return I18N[currentLang] || I18N.en;
+        }
+
+        function t(key, vars) {
+            vars = vars || {};
+            let s = getStrings()[key];
+            if (s == null) return key;
+            s = String(s);
+            Object.keys(vars).forEach(k => {
+                s = s.split('{' + k + '}').join(String(vars[k]));
+            });
+            return s;
+        }
+
+        function applyLanguage(lang) {
+            if (!I18N[lang]) lang = 'en';
+            currentLang = lang;
+            try {
+                localStorage.setItem('trezor-lang', lang);
+            } catch (e) { /* ignore */ }
+
+            document.documentElement.lang = lang;
+
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+
+            const pageTitleEl = document.getElementById('page-title');
+            if (pageTitleEl) pageTitleEl.textContent = t('pageTitle');
+
+            const sub = document.getElementById('app-subtitle');
+            if (sub) sub.textContent = t('subtitle');
+
+            const inst = document.getElementById('instructions-text');
+            if (inst) inst.textContent = t('instructions');
+
+            const thF = document.getElementById('vocab-th-foreign');
+            if (thF) thF.textContent = t('foreignColumn');
+
+            const addBtn = document.getElementById('add-row-btn');
+            if (addBtn) addBtn.textContent = t('addRow');
+
+            const pasteEl = document.getElementById('paste-hint');
+            if (pasteEl) pasteEl.textContent = t('pasteTip');
+
+            const startBtn = document.getElementById('start-game-button');
+            if (startBtn) startBtn.textContent = t('startGame');
+
+            const gameInputEl = document.getElementById('game-input');
+            if (gameInputEl) gameInputEl.placeholder = t('gamePlaceholder');
+
+            const submitEl = document.getElementById('submit-answer');
+            if (submitEl) submitEl.textContent = t('submit');
+
+            document.querySelectorAll('.english-input').forEach(inp => {
+                inp.placeholder = t('placeholderForeign');
+            });
+            document.querySelectorAll('.czech-input').forEach(inp => {
+                inp.placeholder = t('placeholderCzech');
+            });
+            document.querySelectorAll('.remove-row').forEach(btn => {
+                btn.title = t('removeRowTitle');
+            });
+
+            updateRowCounter();
+            updateLocks();
+        }
+
+        let _speechVoicesCache = [];
+
+        function refreshSpeechVoices() {
+            try {
+                _speechVoicesCache = window.speechSynthesis ? (window.speechSynthesis.getVoices() || []) : [];
+            } catch (e) {
+                _speechVoicesCache = [];
+            }
+        }
+
+        function getVoiceForLang(targetLang) {
+            if (!window.speechSynthesis) return null;
+            if (!_speechVoicesCache || _speechVoicesCache.length === 0) refreshSpeechVoices();
+
+            const t = String(targetLang || '').toLowerCase().replace('_', '-');
+            const voices = _speechVoicesCache || [];
+
+            const exact = voices.find(v => String(v.lang || '').toLowerCase().replace('_', '-') === t);
+            if (exact) return exact;
+
+            const starts = voices.find(v => String(v.lang || '').toLowerCase().replace('_', '-').startsWith(t));
+            if (starts) return starts;
+
+            const base = t.split('-')[0];
+            const fallback = voices.find(v => String(v.lang || '').toLowerCase().replace('_', '-').startsWith(base + '-'));
+            if (fallback) return fallback;
+
+            // Hlasy se často načítají až po prvním zobrazení stránky.
+            // Když match nenajdeme, jednou zkusíme znovu obnovit cache.
+            refreshSpeechVoices();
+            const refreshedVoices = _speechVoicesCache || [];
+            const exact2 = refreshedVoices.find(v => String(v.lang || '').toLowerCase().replace('_', '-') === t);
+            if (exact2) return exact2;
+            const starts2 = refreshedVoices.find(v => String(v.lang || '').toLowerCase().replace('_', '-').startsWith(t));
+            if (starts2) return starts2;
+            const fallback2 = refreshedVoices.find(v => String(v.lang || '').toLowerCase().replace('_', '-').startsWith(base + '-'));
+            if (fallback2) return fallback2;
+
+            // Poslední záchrana: vyhledej hlas podle názvu (některé hlasy nemají použitelný `lang`).
+            if (base === 'uk') {
+                const byName = refreshedVoices.find(v => String(v.name || '').toLowerCase().includes('ukrain'));
+                if (byName) return byName;
+            }
+            return null;
+        }
+
+        if (window.speechSynthesis) {
+            refreshSpeechVoices();
+            window.speechSynthesis.addEventListener?.('voiceschanged', refreshSpeechVoices);
+        }
+
+        function speakForeignWord(text) {
+            if (!text || !window.speechSynthesis) return;
+            try {
+                window.speechSynthesis.cancel();
+                // `en` = GB, `us` = US, `uk` = ukrajinština.
+                // U `uk` zkoušíme víc variant kódů, protože hlasy v systému se liší.
+                const langCandidates = currentLang === 'uk'
+                    ? ['uk-UA', 'uk']
+                    : currentLang === 'us'
+                        ? ['en-US']
+                        : currentLang === 'en'
+                            ? ['en-GB']
+                            : [SPEECH_LANG[currentLang] || 'en-US'];
+
+                const utterance = new SpeechSynthesisUtterance(text);
+
+                let resolvedVoice = null;
+                let resolvedLang = langCandidates[0];
+
+                for (const candidate of langCandidates) {
+                    const v = getVoiceForLang(candidate);
+                    if (v) {
+                        resolvedVoice = v;
+                        resolvedLang = candidate;
+                        break;
+                    }
+                }
+
+                // Nastavíme alespoň `lang`. Když se hlas nepodaří najít (typicky chybí ukrajinský hlas),
+                // použijeme fallback na US, aby to nebylo "němé".
+                utterance.lang = resolvedLang;
+                if (resolvedVoice) utterance.voice = resolvedVoice;
+                else if (currentLang === 'uk') {
+                    console.warn('Ukrainian voice not found. Falling back to en-US.');
+                    utterance.lang = 'en-US';
+                    // Necháme prohlížeči vybrat default voice.
+                }
+
+                utterance.rate = 0.92;
+                window.speechSynthesis.speak(utterance);
+            } catch (e) {
+                console.log('Speech not supported');
+            }
+        }
+
+        document.querySelector('.lang-switcher')?.addEventListener('click', (e) => {
+            const btn = e.target.closest('.lang-btn');
+            if (!btn) return;
+            const lang = btn.dataset.lang;
+            if (lang) applyLanguage(lang);
+        });
+
+        const MAX_ROWS = 20;
+        const vocabBody = document.getElementById('vocab-rows');
+        const addRowBtn = document.getElementById('add-row-btn');
+        const startGameBtn = document.getElementById('start-game-button');
+        const validationMessage = document.getElementById('validation-message');
+        const rowCounterEl = document.getElementById('row-counter');
+        const safeEl = document.getElementById('safe');
+
+        function createVocabRow() {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="text" class="english-input" /></td>
+                <td><input type="text" class="czech-input" /></td>
+                <td><button class="remove-row" type="button">🗑️</button></td>
+            `;
+            const eng = tr.querySelector('.english-input');
+            const cz = tr.querySelector('.czech-input');
+            const rm = tr.querySelector('.remove-row');
+            eng.placeholder = t('placeholderForeign');
+            cz.placeholder = t('placeholderCzech');
+            rm.title = t('removeRowTitle');
+            return tr;
+        }
+
+        function addVocabularyRow() {
+            const rowCount = document.querySelectorAll('.english-input').length;
+            if (rowCount >= MAX_ROWS) return;
+
+            const newRow = createVocabRow();
+            vocabBody.appendChild(newRow);
+        }
+
+        function updateRowCounter() {
+            const rowCount = document.querySelectorAll('.english-input').length;
+            rowCounterEl.textContent = `(${rowCount}/${MAX_ROWS} ${t('rows')})`;
+        }
+
+        function ensureRowCount(requiredCount) {
+            while (document.querySelectorAll('.english-input').length < requiredCount &&
+                   document.querySelectorAll('.english-input').length < MAX_ROWS) {
+                addVocabularyRow();
+            }
+        }
+
+        function parseExcelRows(rawText) {
+            return rawText
+                .replace(/\r\n/g, '\n')
+                .replace(/\r/g, '\n')
+                .split('\n')
+                .map(line => line.trim())
+                .filter(Boolean)
+                .map(line => line.split('\t'))
+                .filter(parts => parts.length >= 2)
+                .map(parts => ({
+                    english: (parts[0] || '').trim(),
+                    czech: (parts[1] || '').trim()
+                }))
+                .filter(item => item.english && item.czech);
+        }
+
+        function importExcelData(rawText, startIndex = 0) {
+            const parsed = parseExcelRows(rawText);
+            if (parsed.length === 0) return false;
+
+            const cappedStartIndex = Math.max(0, Math.min(startIndex, MAX_ROWS - 1));
+            const maxImportCount = MAX_ROWS - cappedStartIndex;
+            const rowsToInsert = parsed.slice(0, maxImportCount);
+            const requiredCount = cappedStartIndex + rowsToInsert.length;
+
+            ensureRowCount(requiredCount);
+
+            const engInputs = document.querySelectorAll('.english-input');
+            const czInputs = document.querySelectorAll('.czech-input');
+
+            rowsToInsert.forEach((row, offset) => {
+                const rowIndex = cappedStartIndex + offset;
+                if (engInputs[rowIndex] && czInputs[rowIndex]) {
+                    engInputs[rowIndex].value = row.english;
+                    czInputs[rowIndex].value = row.czech;
+                }
+            });
+
+            updateRowCounter();
+            updateLocks();
+            addRowBtn.disabled = document.querySelectorAll('.english-input').length >= MAX_ROWS;
+            return true;
+        }
+
+        function validateVocabulary() {
+            const filledRows = [];
+            
+            const engInputs = document.querySelectorAll('.english-input');
+            const czInputs = document.querySelectorAll('.czech-input');
+
+            engInputs.forEach((engInput, index) => {
+                const czInput = czInputs[index];
+                
+                if (engInput && czInput &&
+                    engInput.value.trim() &&
+                    czInput.value.trim()) {
+                    filledRows.push({
+                        english: engInput.value.trim(),
+                        czech: czInput.value.trim()
+                    });
+                }
+            });
+            
+            return filledRows;
+        }
+
+        function updateStartButton(lockCount) {
+            const count = typeof lockCount === 'number'
+                ? lockCount
+                : validateVocabulary().length;
+
+            if (count > 0) {
+                startGameBtn.disabled = false;
+                validationMessage.textContent = t('validationReady', { count });
+                validationMessage.classList.remove('error');
+                validationMessage.classList.add('success');
+            } else {
+                startGameBtn.disabled = true;
+                validationMessage.textContent = t('validationEmpty');
+                validationMessage.classList.remove('success');
+                validationMessage.classList.add('error');
+            }
+        }
+
+        function calculateLockPositions(count) {
+            const positions = [];
+            const safeWidth = 400;
+            const safeHeight = 500;
+            const margin = 100;
+            
+            if (count === 1) {
+                positions.push({
+                    x: safeWidth / 2 - 25,
+                    y: safeHeight / 2 - 25
+                });
+            } else if (count === 2) {
+                positions.push({
+                    x: safeWidth / 2 - 25,
+                    y: safeHeight / 3 - 25
+                });
+                positions.push({
+                    x: safeWidth / 2 - 25,
+                    y: (safeHeight * 2) / 3 - 25
+                });
+            } else if (count === 3) {
+                const spacing = (safeHeight - 2 * margin) / 2;
+                for (let i = 0; i < 3; i++) {
+                    positions.push({
+                        x: safeWidth / 2 - 25,
+                        y: margin + (i * spacing) - 25
+                    });
+                }
+            } else if (count === 4) {
+                const xPositions = [safeWidth / 3 - 25, (safeWidth * 2) / 3 - 25];
+                const yPositions = [safeHeight / 3 - 25, (safeHeight * 2) / 3 - 25];
+                
+                for (let row = 0; row < 2; row++) {
+                    for (let col = 0; col < 2; col++) {
+                        positions.push({
+                            x: xPositions[col],
+                            y: yPositions[row]
+                        });
+                    }
+                }
+            } else if (count <= 6) {
+                const cols = 2;
+                const rows = Math.ceil(count / cols);
+                const xSpacing = safeWidth / 3;
+                const ySpacing = (safeHeight - 2 * margin) / (rows > 1 ? rows - 1 : 1);
+                
+                for (let i = 0; i < count; i++) {
+                    const col = i % cols;
+                    const row = Math.floor(i / cols);
+                    positions.push({
+                        x: (col + 1) * xSpacing - 25,
+                        y: margin + (row * ySpacing) - 25
+                    });
+                }
+            } else {
+                const cols = 3;
+                const rows = Math.ceil(count / cols);
+                const xSpacing = safeWidth / 4;
+                const ySpacing = (safeHeight - 2 * margin) / (rows > 1 ? rows - 1 : 1);
+                
+                for (let i = 0; i < count; i++) {
+                    const col = i % cols;
+                    const row = Math.floor(i / cols);
+                    positions.push({
+                        x: (col + 1) * xSpacing - 25,
+                        y: margin + (row * ySpacing) - 25
+                    });
+                }
+            }
+            
+            return positions;
+        }
+
+        function updateLocks() {
+            const vocabulary = validateVocabulary();
+            const lockCount = vocabulary.length;
+
+            document.querySelectorAll('.lock').forEach(lock => lock.remove());
+
+            if (lockCount === 0) {
+                updateStartButton(0);
+                return;
+            }
+
+            const positions = calculateLockPositions(lockCount);
+            const safeDoor = document.getElementById('safe-door');
+
+            for (let i = 1; i <= lockCount; i++) {
+                const lock = document.createElement('div');
+                lock.className = 'lock locked';
+                lock.id = `lock-${i}`;
+                lock.textContent = i;
+
+                const pos = positions[i - 1];
+                lock.style.left = `${pos.x}px`;
+                lock.style.top = `${pos.y}px`;
+
+                if (safeDoor) {
+                    safeDoor.appendChild(lock);
+                }
+            }
+
+            updateStartButton(lockCount);
+        }
+
+        addRowBtn.addEventListener('click', function () {
+            const rowCount = document.querySelectorAll('.english-input').length;
+
+            if (rowCount < MAX_ROWS) {
+                addVocabularyRow();
+                updateRowCounter();
+                updateLocks();
+            }
+
+            const newCount = document.querySelectorAll('.english-input').length;
+            if (newCount >= MAX_ROWS) {
+                this.disabled = true;
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-row')) {
+                const rowCount = document.querySelectorAll('.english-input').length;
+
+                if (rowCount > 1) {
+                    const row = e.target.closest('tr');
+                    if (row) {
+                        row.remove();
+                        updateRowCounter();
+                        updateLocks();
+                        addRowBtn.disabled = false;
+                    }
+                }
+            }
+        });
+
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('english-input') ||
+                e.target.classList.contains('czech-input')) {
+                updateLocks();
+            }
+        });
+
+        document.addEventListener('paste', (e) => {
+            const target = e.target;
+            if (!target || !(target.classList?.contains('english-input') || target.classList?.contains('czech-input'))) {
+                return;
+            }
+
+            const pastedText = e.clipboardData?.getData('text') || '';
+            if (!pastedText.includes('\t') || !pastedText.includes('\n')) {
+                return;
+            }
+
+            const allRows = Array.from(document.querySelectorAll('#vocab-rows tr'));
+            const targetRow = target.closest('tr');
+            const startIndex = Math.max(0, allRows.indexOf(targetRow));
+
+            if (importExcelData(pastedText, startIndex)) {
+                e.preventDefault();
+            }
+        });
+
+        let gameVocabulary = [];
+        let currentWord = null;
+        let unlockedCount = 0;
+        let incorrectWords = [];
+        let correctWords = [];
+
+        startGameBtn.addEventListener('click', startGame);
+
+        function startGame() {
+            gameVocabulary = validateVocabulary();
+            
+            if (gameVocabulary.length === 0) {
+                alert(t('alertNoWords'));
+                return;
+            }
+            
+            unlockedCount = 0;
+            incorrectWords = [];
+            correctWords = [];
+            
+            document.querySelectorAll('.lock').forEach(lock => {
+                lock.classList.remove('unlocked');
+                lock.classList.add('locked');
+            });
+            
+            const leftSection = document.querySelector('.left-section');
+            if (leftSection) {
+                leftSection.classList.add('hidden');
+            }
+            
+            const rightSection = document.querySelector('.right-section');
+            if (rightSection) {
+                rightSection.classList.add('game-mode');
+            }
+            
+            const gamePanel = document.getElementById('game-panel');
+            if (gamePanel) {
+                gamePanel.style.display = 'block';
+            }
+            
+            showNextWord();
+        }
+
+        function showNextWord() {
+            const gameInput = document.getElementById('game-input');
+            const feedbackMessage = document.getElementById('feedback-message');
+            
+            if (gameInput) {
+                gameInput.value = '';
+                gameInput.className = 'game-input';
+                gameInput.focus();
+            }
+            
+            if (feedbackMessage) {
+                feedbackMessage.textContent = '';
+                feedbackMessage.className = 'feedback-message';
+            }
+            
+            if (incorrectWords.length > 0 && Math.random() < 0.4) {
+                currentWord = incorrectWords.shift();
+            } else {
+                const availableWords = gameVocabulary.filter(w => !correctWords.includes(w));
+                
+                if (availableWords.length === 0) {
+                    endGame();
+                    return;
+                }
+                
+                currentWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+            }
+            
+            const showEnglish = Math.random() < 0.5;
+            const wordToShow = showEnglish ? currentWord.english : currentWord.czech;
+            currentWord.isEnglish = showEnglish;
+            
+            const gameWord = document.getElementById('game-word');
+            if (gameWord) {
+                gameWord.textContent = wordToShow;
+            }
+        }
+
+        document.getElementById('submit-answer')?.addEventListener('click', checkAnswer);
+        document.getElementById('game-input')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+
+        function checkAnswer() {
+            const gameInput = document.getElementById('game-input');
+            const feedbackMessage = document.getElementById('feedback-message');
+            
+            if (!gameInput || !currentWord) return;
+            
+            const userAnswer = gameInput.value;
+            const correctAnswer = currentWord.isEnglish
+                ? currentWord.czech
+                : currentWord.english;
+
+            const normalizedUser = normalizeAnswer(userAnswer);
+            const normalizedCorrect = normalizeAnswer(correctAnswer);
+
+            if (normalizedUser === normalizedCorrect) {
+                gameInput.className = 'game-input correct';
+                if (feedbackMessage) {
+                    feedbackMessage.textContent = t('correctFeedback');
+                    feedbackMessage.className = 'feedback-message correct';
+                }
+                
+                playSound(800, 200);
+                unlockNextLock();
+                
+                if (!correctWords.includes(currentWord)) {
+                    correctWords.push(currentWord);
+                }
+                
+                incorrectWords = incorrectWords.filter(w => w !== currentWord);
+                
+                setTimeout(() => {
+                    showNextWord();
+                }, 1000);
+                
+            } else {
+                gameInput.className = 'game-input incorrect';
+                if (feedbackMessage) {
+                    feedbackMessage.textContent = t('incorrectFeedback', { answer: correctAnswer });
+                    feedbackMessage.className = 'feedback-message incorrect';
+                }
+                
+                if (!incorrectWords.includes(currentWord) && !correctWords.includes(currentWord)) {
+                    incorrectWords.push(currentWord);
+                }
+                
+                setTimeout(() => {
+                    showNextWord();
+                }, 2000);
+            }
+        }
+
+        function unlockNextLock() {
+            const locks = document.querySelectorAll('.lock.locked');
+            
+            if (locks.length > 0) {
+                locks[0].classList.remove('locked');
+                locks[0].classList.add('unlocked');
+                unlockedCount++;
+            }
+        }
+
+        function endGame() {
+            const gamePanel = document.getElementById('game-panel');
+            if (gamePanel) {
+                gamePanel.style.display = 'none';
+            }
+            
+            setTimeout(() => {
+                const safeDoor = document.getElementById('safe-door');
+                if (safeDoor) {
+                    safeDoor.classList.add('open');
+                }
+                playFanfare();
+            }, 500);
+            
+            setTimeout(() => {
+                const scrollContainer = document.getElementById('scroll-container');
+                if (scrollContainer) {
+                    scrollContainer.style.display = 'block';
+                }
+                
+                generatePoem();
+            }, 2500);
+        }
+
+        function normalizeAnswer(str) {
+            if (str == null || str === '') return '';
+            let s = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            s = s.toLowerCase();
+            try {
+                s = s.replace(/[^\p{L}\p{N}\s]/gu, '');
+            } catch (e) {
+                s = s.replace(/[^a-z0-9\u00c0-\u024f\u0400-\u04FF\s]/gi, '');
+            }
+            s = s.replace(/\s+/g, ' ').trim();
+            return s;
+        }
+
+        function playSound(frequency, duration) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration / 1000);
+            } catch (e) {
+                console.log('Audio not supported');
+            }
+        }
+
+        function playFanfare() {
+            const notes = [523, 659, 784, 1047];
+            notes.forEach((freq, index) => {
+                setTimeout(() => playSound(freq, 300), index * 250);
+            });
+        }
+
+        function escapeHtml(str) {
+            if (str == null) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function generatePoem() {
+            const excelData = gameVocabulary.map(v => `${v.english}\t${v.czech}`).join('\n');
+            
+            const scrollContent = document.getElementById('scroll-content');
+            if (scrollContent) {
+                scrollContent.innerHTML = `
+                    <div class="scroll-title">${t('scrollTitle')}</div>
+                    <div class="scroll-subtitle">${t('scrollSubtitle')}</div>
+                    
+                    <div class="scroll-words">
+                        <h3>${t('vocabMastered')}</h3>
+                        
+                        <textarea id="excel-copy-area" style="position: absolute; left: -9999px;">${excelData}</textarea>
+                        
+                        <div class="excel-table">
+                            <div class="excel-header">
+                                <div class="excel-cell excel-cell-speak" aria-hidden="true">${currentLang === 'us' ? 'US' : (currentLang === 'en' ? 'GB' : '')}</div>
+                                <div class="excel-cell">${t('foreignColumn')}</div>
+                                <div class="excel-cell">Česky</div>
+                            </div>
+                            ${gameVocabulary.map((v, i) => `
+                                <div class="excel-row">
+                                    <div class="excel-cell excel-cell-speak">
+                                        <button type="button" class="speak-btn" data-vocab-index="${i}" title="${escapeHtml(t('speakTitle'))}" aria-label="${escapeHtml(t('speakAria'))}">🔊</button>
+                                    </div>
+                                    <div class="excel-cell">${escapeHtml(v.english)}</div>
+                                    <div class="excel-cell">${escapeHtml(v.czech)}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <button class="copy-button" onclick="copyToExcel()">
+                            ${t('copyExcel')}
+                        </button>
+                        <div id="copy-feedback" class="copy-hint"></div>
+                    </div>
+                    
+                    <div class="button-container">
+                        <button class="scroll-button repeat-button" onclick="repeatGame()">
+                            ${t('repeatGame')}
+                        </button>
+                        <button class="scroll-button new-button" onclick="location.reload()">
+                            ${t('newGame')}
+                        </button>
+                    </div>
+                `;
+
+                scrollContent.querySelectorAll('.speak-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const i = parseInt(btn.getAttribute('data-vocab-index'), 10);
+                        if (!Number.isNaN(i) && gameVocabulary[i]) {
+                            speakForeignWord(gameVocabulary[i].english);
+                        }
+                    });
+                });
+            }
+        }
+
+        function copyToExcel() {
+            const textarea = document.getElementById('excel-copy-area');
+            const feedback = document.getElementById('copy-feedback');
+            
+            if (textarea) {
+                textarea.select();
+                
+                try {
+                    document.execCommand('copy');
+                    if (feedback) {
+                        feedback.textContent = t('copySuccess');
+                        feedback.style.color = '#27ae60';
+                        
+                        setTimeout(() => {
+                            feedback.textContent = '';
+                        }, 3000);
+                    }
+                } catch (err) {
+                    if (feedback) {
+                        feedback.textContent = t('copyFail');
+                        feedback.style.color = '#e74c3c';
+                    }
+                }
+            }
+        }
+
+        function repeatGame() {
+            unlockedCount = 0;
+            incorrectWords = [];
+            correctWords = [];
+            
+            document.querySelectorAll('.lock').forEach(lock => {
+                lock.classList.remove('unlocked');
+                lock.classList.add('locked');
+            });
+            
+            const scrollContainer = document.getElementById('scroll-container');
+            if (scrollContainer) {
+                scrollContainer.style.display = 'none';
+            }
+            
+            const safeDoor = document.getElementById('safe-door');
+            if (safeDoor) {
+                safeDoor.classList.remove('open');
+            }
+            
+            const gamePanel = document.getElementById('game-panel');
+            if (gamePanel) {
+                gamePanel.style.display = 'block';
+            }
+            
+            showNextWord();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            try {
+                const saved = localStorage.getItem('trezor-lang');
+                if (saved && I18N[saved]) {
+                    currentLang = saved;
+                }
+            } catch (e) { /* ignore */ }
+
+            for (let i = 0; i < 3; i++) {
+                addVocabularyRow();
+            }
+
+            applyLanguage(currentLang);
+
+            const firstEng = document.querySelector('.english-input');
+            if (firstEng) {
+                firstEng.focus();
+            }
+        });
+    </script>
+</body>
+</html>
