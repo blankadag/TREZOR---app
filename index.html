@@ -1441,101 +1441,95 @@
             updateLocks();
         }
 
-        let _speechVoicesCache = [];
+        // ── SPEECH ─────────────────────────────────────────────────────────────
+        // iOS Safari načítá hlasy asynchronně a `voiceschanged` se nemusí spustit.
+        // Řešení: hlasy načteme s opakovanými pokusy (polling) a uložíme do cache.
 
-        function refreshSpeechVoices() {
+        let _voicesCache = [];
+        let _voicesReady = false;
+
+        function _loadVoices() {
             try {
-                _speechVoicesCache = window.speechSynthesis ? (window.speechSynthesis.getVoices() || []) : [];
-            } catch (e) {
-                _speechVoicesCache = [];
-            }
+                const v = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+                if (v && v.length > 0) {
+                    _voicesCache = v;
+                    _voicesReady = true;
+                }
+            } catch (e) {}
         }
 
-        function getVoiceForLang(targetLang) {
-            if (!window.speechSynthesis) return null;
-            if (!_speechVoicesCache || _speechVoicesCache.length === 0) refreshSpeechVoices();
-
-            const t = String(targetLang || '').toLowerCase().replace('_', '-');
-            const voices = _speechVoicesCache || [];
-
-            const exact = voices.find(v => String(v.lang || '').toLowerCase().replace('_', '-') === t);
-            if (exact) return exact;
-
-            const starts = voices.find(v => String(v.lang || '').toLowerCase().replace('_', '-').startsWith(t));
-            if (starts) return starts;
-
-            const base = t.split('-')[0];
-            const fallback = voices.find(v => String(v.lang || '').toLowerCase().replace('_', '-').startsWith(base + '-'));
-            if (fallback) return fallback;
-
-            // Hlasy se často načítají až po prvním zobrazení stránky.
-            // Když match nenajdeme, jednou zkusíme znovu obnovit cache.
-            refreshSpeechVoices();
-            const refreshedVoices = _speechVoicesCache || [];
-            const exact2 = refreshedVoices.find(v => String(v.lang || '').toLowerCase().replace('_', '-') === t);
-            if (exact2) return exact2;
-            const starts2 = refreshedVoices.find(v => String(v.lang || '').toLowerCase().replace('_', '-').startsWith(t));
-            if (starts2) return starts2;
-            const fallback2 = refreshedVoices.find(v => String(v.lang || '').toLowerCase().replace('_', '-').startsWith(base + '-'));
-            if (fallback2) return fallback2;
-
-            // Poslední záchrana: vyhledej hlas podle názvu (některé hlasy nemají použitelný `lang`).
-            if (base === 'uk') {
-                const byName = refreshedVoices.find(v => String(v.name || '').toLowerCase().includes('ukrain'));
-                if (byName) return byName;
-            }
-            return null;
-        }
-
+        // Načti hned + znovu po události + polling (iOS fix)
+        _loadVoices();
         if (window.speechSynthesis) {
-            refreshSpeechVoices();
-            window.speechSynthesis.addEventListener?.('voiceschanged', refreshSpeechVoices);
+            window.speechSynthesis.onvoiceschanged = _loadVoices;
+            // Polling: zkus každých 200ms po dobu 3s (iOS iPod fix)
+            let _pollCount = 0;
+            const _pollInterval = setInterval(() => {
+                _loadVoices();
+                if (_voicesReady || ++_pollCount > 15) clearInterval(_pollInterval);
+            }, 200);
+        }
+
+        function _findVoice(langCode) {
+            const voices = _voicesCache;
+            if (!voices.length) return null;
+            const lc = langCode.toLowerCase();
+            const base = lc.split('-')[0];
+
+            // 1. Přesná shoda (en-GB, de-DE …)
+            let v = voices.find(x => x.lang.toLowerCase() === lc);
+            if (v) return v;
+            // 2. Začíná kódem (en-GB začíná "en-gb")
+            v = voices.find(x => x.lang.toLowerCase().startsWith(lc));
+            if (v) return v;
+            // 3. Stejný základní jazyk (en, de, fr …)
+            v = voices.find(x => x.lang.toLowerCase().startsWith(base + '-'));
+            if (v) return v;
+            // 4. Jen základní kód
+            v = voices.find(x => x.lang.toLowerCase() === base);
+            return v || null;
         }
 
         function speakForeignWord(text) {
             if (!text || !window.speechSynthesis) return;
             try {
                 window.speechSynthesis.cancel();
-                // `en` = GB, `us` = US, `uk` = ukrajinština.
-                // U `uk` zkoušíme víc variant kódů, protože hlasy v systému se liší.
-                const langCandidates = currentLang === 'uk'
-                    ? ['uk-UA', 'uk']
-                    : currentLang === 'us'
-                        ? ['en-US']
-                        : currentLang === 'en'
-                            ? ['en-GB']
-                            : [SPEECH_LANG[currentLang] || 'en-US'];
 
-                const utterance = new SpeechSynthesisUtterance(text);
+                const targetLang = SPEECH_LANG[currentLang] || 'en-US';
+                const utterance  = new SpeechSynthesisUtterance(text);
+                utterance.rate   = 0.9;
 
-                let resolvedVoice = null;
-                let resolvedLang = langCandidates[0];
-
-                for (const candidate of langCandidates) {
-                    const v = getVoiceForLang(candidate);
-                    if (v) {
-                        resolvedVoice = v;
-                        resolvedLang = candidate;
-                        break;
+                if (_voicesReady) {
+                    // Hlasy jsou načteny — vyber správný
+                    const voice = _findVoice(targetLang);
+                    if (voice) {
+                        utterance.voice = voice;
+                        utterance.lang  = voice.lang;
+                    } else {
+                        // Hlas pro jazyk chybí — nastav alespoň lang kód
+                        utterance.lang = targetLang;
                     }
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    // Hlasy ještě nejsou — počkej max 1s, pak mluv s lang kódem
+                    utterance.lang = targetLang;
+                    let spoken = false;
+                    const trySpeak = setInterval(() => {
+                        _loadVoices();
+                        if (_voicesReady || ++spoken > 5) {
+                            clearInterval(trySpeak);
+                            const voice = _findVoice(targetLang);
+                            if (voice) { utterance.voice = voice; utterance.lang = voice.lang; }
+                            window.speechSynthesis.cancel();
+                            window.speechSynthesis.speak(utterance);
+                        }
+                    }, 200);
                 }
-
-                // Nastavíme alespoň `lang`. Když se hlas nepodaří najít (typicky chybí ukrajinský hlas),
-                // použijeme fallback na US, aby to nebylo "němé".
-                utterance.lang = resolvedLang;
-                if (resolvedVoice) utterance.voice = resolvedVoice;
-                else if (currentLang === 'uk') {
-                    console.warn('Ukrainian voice not found. Falling back to en-US.');
-                    utterance.lang = 'en-US';
-                    // Necháme prohlížeči vybrat default voice.
-                }
-
-                utterance.rate = 0.92;
-                window.speechSynthesis.speak(utterance);
             } catch (e) {
-                console.log('Speech not supported');
+                console.log('Speech error:', e);
             }
         }
+        // ── /SPEECH ─────────────────────────────────────────────────────────────
 
         document.querySelector('.lang-switcher')?.addEventListener('click', (e) => {
             const btn = e.target.closest('.lang-btn');
