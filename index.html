@@ -15,6 +15,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
+            min-height: -webkit-fill-available;
             color: #ffffff;
         }
 
@@ -27,12 +28,27 @@
             box-sizing: border-box;
         }
 
+        /* iOS Safari: ensure content is scrollable and not clipped */
+        @supports (-webkit-touch-callout: none) {
+            .main-container {
+                min-height: -webkit-fill-available;
+            }
+            .vocabulary-table-container {
+                max-height: none;
+                overflow-y: visible;
+            }
+            .left-section {
+                overflow: visible;
+            }
+        }
+
         .left-section {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            overflow: visible;
         }
 
         .right-section {
@@ -149,6 +165,7 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
             width: 100%;
             max-width: 900px;
+            overflow: visible;
         }
 
         .vocabulary-table-container {
@@ -158,6 +175,7 @@
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             background: white;
+            -webkit-overflow-scrolling: touch;
         }
 
         .vocabulary-table-container::-webkit-scrollbar {
@@ -180,58 +198,70 @@
 
         .vocabulary-table {
             width: 100%;
-            max-width: none;
             background: white;
             border-radius: 12px;
-            border-collapse: collapse;
             overflow: hidden;
         }
 
-        .vocabulary-table th {
+        .vocab-header {
+            display: flex;
             background: #3498db;
             color: white;
-            padding: 12px;
             font-weight: bold;
-            text-align: left;
             font-size: 14px;
         }
 
-        .vocabulary-table td {
-            padding: 8px;
+        .vocab-row {
+            display: flex;
+            align-items: stretch;
             border-bottom: 1px solid #ecf0f1;
-            background: #ffffff;
+            background: white;
         }
 
-        .vocabulary-table th:nth-child(1),
-        .vocabulary-table td:nth-child(1) {
-            width: 47%;
-        }
-
-        .vocabulary-table th:nth-child(2),
-        .vocabulary-table td:nth-child(2) {
-            width: 47%;
-        }
-
-        .vocabulary-table th:nth-child(3),
-        .vocabulary-table td:nth-child(3) {
-            width: 6%;
-            text-align: center;
-            padding: 8px 4px;
-        }
-
-        .vocabulary-table tr:last-child td {
+        .vocab-row:last-child {
             border-bottom: none;
+        }
+
+        .vocab-col-foreign {
+            flex: 47;
+            padding: 10px 8px;
+            min-width: 0;
+        }
+
+        .vocab-col-czech {
+            flex: 47;
+            padding: 10px 8px;
+            min-width: 0;
+            border-left: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .vocab-header .vocab-col-czech {
+            border-left: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .vocab-col-del {
+            flex: 0 0 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
         }
 
         .vocabulary-table input {
             width: 100%;
-            padding: 10px 12px;
+            padding: 8px 10px;
             border: 1px solid #ddd;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 16px; /* min 16px prevents iOS auto-zoom */
             line-height: 1.4;
             transition: border-color 0.3s;
             box-sizing: border-box;
+            -webkit-appearance: none;
+            appearance: none;
+            background: white;
+            color: #333;
+            display: block;
+            touch-action: manipulation;
         }
 
         .vocabulary-table input:focus {
@@ -348,7 +378,7 @@
             position: relative;
             width: 100%;
             max-width: 500px;
-            height: clamp(350px, 60vw, 600px);
+            height: clamp(320px, 60vw, 600px);
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -356,8 +386,8 @@
         }
 
         #safe {
-            width: clamp(240px, 80vw, 400px);
-            height: clamp(300px, 70vw, 500px);
+            width: clamp(220px, 75vw, 400px);
+            height: clamp(280px, 65vw, 500px);
             background: linear-gradient(145deg, #434343, #2d2d2d);
             border-radius: 15px;
             box-shadow: 
@@ -461,9 +491,9 @@
             transform-origin: top center;
             animation: scroll-unroll 1s ease 3.5s forwards;
             left: 50%;
-            transform-origin: top center;
-            translate: -50% 0;
+            margin-left: min(-350px, -46vw);
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         @keyframes scroll-unroll {
@@ -757,6 +787,10 @@
             text-align: center;
             box-sizing: border-box;
             transition: all 0.3s;
+            -webkit-appearance: none;
+            appearance: none;
+            background: white;
+            color: #333;
         }
 
         .game-input:focus {
@@ -847,18 +881,11 @@
             max-width: 500px;
         }
 
-        @media (max-width: 600px) {
-            .excel-table {
-                max-width: 100%;
-            }
-        }
-
         @media (max-width: 1200px) {
             .right-section.game-mode {
                 flex-direction: column;
                 gap: 20px;
             }
-            
             .right-section.game-mode .game-panel {
                 margin-top: 20px;
             }
@@ -868,138 +895,47 @@
             .main-container {
                 flex-direction: column;
             }
-            
             .left-section,
             .right-section {
                 width: 100%;
                 flex: none;
             }
-            
             .vocabulary-table-container {
                 max-height: 50vh;
             }
         }
 
         @media (max-width: 768px) {
-            .app-title {
-                font-size: 32px;
-            }
-
-            .app-subtitle {
-                font-size: 15px;
-            }
-            
-            .vocabulary-table input {
-                font-size: 13px;
-                padding: 8px 10px;
-            }
-            
-            .vocabulary-table th {
-                font-size: 13px;
-                padding: 10px 8px;
-            }
-
-            .lock {
-                width: 36px;
-                height: 36px;
-                font-size: 14px;
-            }
-
-            .game-panel {
-                padding: 20px 15px;
-            }
-
-            .game-word {
-                font-size: 26px;
-                padding: 12px;
-            }
-
-            .game-input {
-                font-size: 17px;
-                padding: 12px;
-            }
-
-            .submit-button {
-                font-size: 16px;
-                padding: 12px 28px;
-            }
-
-            .scroll-title {
-                font-size: 22px;
-            }
-
-            .scroll-words h3 {
-                font-size: 15px;
-            }
-
-            .excel-cell {
-                padding: 7px 8px;
-                font-size: 13px;
-            }
-
-            .scroll-button {
-                min-width: 0;
-                width: 100%;
-                font-size: 14px;
-                padding: 10px 15px;
-            }
-
-            .button-container {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .start-game-button {
-                font-size: 16px;
-                padding: 13px 28px;
-            }
+            .app-title { font-size: 32px; }
+            .app-subtitle { font-size: 15px; }
+            .vocabulary-table input { font-size: 16px; padding: 8px 10px; }
+            .vocabulary-table th { font-size: 13px; padding: 10px 8px; }
+            .lock { width: 36px; height: 36px; font-size: 14px; }
+            .game-panel { padding: 20px 15px; }
+            .game-word { font-size: 26px; padding: 12px; }
+            .game-input { font-size: 18px; padding: 12px; }
+            .submit-button { font-size: 16px; padding: 12px 28px; }
+            .scroll-title { font-size: 22px; }
+            .scroll-words h3 { font-size: 15px; }
+            .excel-cell { padding: 7px 8px; font-size: 13px; }
+            .excel-table { max-width: 100%; }
+            .scroll-button { min-width: 0; width: 100%; font-size: 14px; padding: 10px 15px; }
+            .button-container { flex-direction: column; gap: 10px; }
+            .start-game-button { font-size: 16px; padding: 13px 28px; }
         }
 
         @media (max-width: 480px) {
-            .main-container {
-                padding: 10px;
-                gap: 10px;
-            }
-
-            .left-section,
-            .right-section {
-                padding: 10px;
-            }
-
-            .app-title {
-                font-size: 28px;
-            }
-
-            .lang-switcher {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-
-            .lang-btn {
-                font-size: 11px;
-                padding: 5px 8px;
-            }
-
-            .hero-czech {
-                font-size: 15px;
-            }
-
-            .instructions p {
-                font-size: 13px;
-            }
-
-            .vocabulary-panel {
-                padding: 10px 10px 15px;
-            }
-
-            .game-word {
-                font-size: 22px;
-                min-height: 40px;
-            }
-
-            .safe-container {
-                height: clamp(280px, 75vw, 400px);
-            }
+            .main-container { padding: 10px; gap: 10px; }
+            .left-section, .right-section { padding: 10px; }
+            .app-title { font-size: 26px; }
+            .lang-switcher { flex-wrap: wrap; justify-content: center; }
+            .lang-btn { font-size: 11px; padding: 5px 8px; }
+            .hero-czech { font-size: 14px; }
+            .instructions p { font-size: 13px; }
+            .vocabulary-panel { padding: 10px 10px 15px; }
+            .game-word { font-size: 20px; min-height: 36px; }
+            .vocabulary-table input { font-size: 16px; }
+            .safe-container { height: clamp(260px, 70vw, 380px); }
         }
     </style>
 </head>
@@ -1032,17 +968,14 @@
 
             <div class="vocabulary-panel">
                 <div class="vocabulary-table-container">
-                    <table class="vocabulary-table">
-                        <thead>
-                            <tr>
-                                <th id="vocab-th-foreign">English</th>
-                                <th>Česky</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="vocab-rows">
-                        </tbody>
-                    </table>
+                    <div class="vocabulary-table">
+                        <div class="vocab-header">
+                            <div class="vocab-col-foreign" id="vocab-th-foreign">English</div>
+                            <div class="vocab-col-czech">Česky</div>
+                            <div class="vocab-col-del"></div>
+                        </div>
+                        <div id="vocab-rows"></div>
+                    </div>
                 </div>
 
                 <div class="table-controls">
@@ -1056,7 +989,7 @@
                         Start game
                     </button>
                     <div id="validation-message" class="validation-message error">
-                        Fill in at least one word pair.
+                        Fill in at least one word pair (foreign language and Česky).
                     </div>
                 </div>
             </div>
@@ -1103,7 +1036,7 @@
                 addRow: '➕ Add row',
                 rows: 'rows',
                 startGame: 'Start game',
-                validationEmpty: 'Fill in at least one word pair.',
+                validationEmpty: 'Fill in at least one word pair (foreign language and Česky).',
                 validationReady: 'Ready ✓ ({count} words)',
                 placeholderForeign: 'English',
                 placeholderCzech: 'Česky',
@@ -1133,7 +1066,7 @@
                 addRow: '➕ Add row',
                 rows: 'rows',
                 startGame: 'Start game',
-                validationEmpty: 'Fill in at least one word pair.',
+                validationEmpty: 'Fill in at least one word pair (foreign language and Česky).',
                 validationReady: 'Ready ✓ ({count} words)',
                 placeholderForeign: 'English',
                 placeholderCzech: 'Česky',
@@ -1163,7 +1096,7 @@
                 addRow: '➕ Zeile hinzufügen',
                 rows: 'Zeilen',
                 startGame: 'Spiel starten',
-                validationEmpty: 'Fülle mindestens ein Wortpaar aus.',
+                validationEmpty: 'Fülle mindestens ein Wortpaar aus (Fremdsprache und Česky).',
                 validationReady: 'Bereit ✓ ({count} Wörter)',
                 placeholderForeign: 'Deutsch',
                 placeholderCzech: 'Česky',
@@ -1193,7 +1126,7 @@
                 addRow: '➕ Añadir fila',
                 rows: 'filas',
                 startGame: 'Comenzar juego',
-                validationEmpty: 'Completa al menos un par de palabras.',
+                validationEmpty: 'Completa al menos un par de palabras (idioma extranjero y Česky).',
                 validationReady: 'Listo ✓ ({count} palabras)',
                 placeholderForeign: 'Español',
                 placeholderCzech: 'Česky',
@@ -1223,7 +1156,7 @@
                 addRow: '➕ Ajouter une ligne',
                 rows: 'lignes',
                 startGame: 'Lancer le jeu',
-                validationEmpty: 'Remplis au moins une paire de mots.',
+                validationEmpty: 'Remplis au moins une paire de mots (langue étrangère et Česky).',
                 validationReady: 'Prêt ✓ ({count} mots)',
                 placeholderForeign: 'Français',
                 placeholderCzech: 'Česky',
@@ -1253,7 +1186,7 @@
                 addRow: '➕ Добавить строку',
                 rows: 'строк',
                 startGame: 'Начать игру',
-                validationEmpty: 'Заполните хотя бы одну пару слов.',
+                validationEmpty: 'Заполните хотя бы одну пару слов (иностранный язык и Česky).',
                 validationReady: 'Готово ✓ ({count} слов)',
                 placeholderForeign: 'Русский',
                 placeholderCzech: 'Česky',
@@ -1283,7 +1216,7 @@
                 addRow: '➕ Aggiungi riga',
                 rows: 'righe',
                 startGame: 'Inizia gioco',
-                validationEmpty: 'Compila almeno una coppia di parole.',
+                validationEmpty: 'Compila almeno una coppia di parole (lingua straniera e Česky).',
                 validationReady: 'Pronto ✓ ({count} parole)',
                 placeholderForeign: 'Italiano',
                 placeholderCzech: 'Česky',
@@ -1313,7 +1246,7 @@
                 addRow: '➕ Lägg till rad',
                 rows: 'rader',
                 startGame: 'Starta spelet',
-                validationEmpty: 'Fyll i minst ett ordpar.',
+                validationEmpty: 'Fyll i minst ett ordpar (främmande språk och Česky).',
                 validationReady: 'Klart ✓ ({count} ord)',
                 placeholderForeign: 'Svenska',
                 placeholderCzech: 'Česky',
@@ -1343,7 +1276,7 @@
                 addRow: '➕ Adicionar linha',
                 rows: 'linhas',
                 startGame: 'Começar jogo',
-                validationEmpty: 'Preenche pelo menos um par de palavras.',
+                validationEmpty: 'Preenche pelo menos um par de palavras (língua estrangeira e Česky).',
                 validationReady: 'Pronto ✓ ({count} palavras)',
                 placeholderForeign: 'Português',
                 placeholderCzech: 'Česky',
@@ -1373,7 +1306,7 @@
                 addRow: '➕ Dodaj wiersz',
                 rows: 'wierszy',
                 startGame: 'Rozpocznij grę',
-                validationEmpty: 'Uzupełnij co najmniej jedną parę słów.',
+                validationEmpty: 'Uzupełnij co najmniej jedną parę słów (język obcy i Česky).',
                 validationReady: 'Gotowe ✓ ({count} słów)',
                 placeholderForeign: 'Polski',
                 placeholderCzech: 'Česky',
@@ -1403,7 +1336,7 @@
                 addRow: '➕ Додати рядок',
                 rows: 'рядків',
                 startGame: 'Почати гру',
-                validationEmpty: 'Заповни хоча б одну пару слів.',
+                validationEmpty: 'Заповни хоча б одну пару слів (іноземна мова та Česky).',
                 validationReady: 'Готово ✓ ({count} слів)',
                 placeholderForeign: 'Українська',
                 placeholderCzech: 'Česky',
@@ -1623,19 +1556,20 @@
         const safeEl = document.getElementById('safe');
 
         function createVocabRow() {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><input type="text" class="english-input" /></td>
-                <td><input type="text" class="czech-input" /></td>
-                <td><button class="remove-row" type="button">🗑️</button></td>
+            const div = document.createElement('div');
+            div.className = 'vocab-row';
+            div.innerHTML = `
+                <div class="vocab-col-foreign"><input type="text" class="english-input" inputmode="text" autocorrect="off" autocapitalize="none" spellcheck="false" /></div>
+                <div class="vocab-col-czech"><input type="text" class="czech-input" inputmode="text" autocorrect="off" autocapitalize="none" spellcheck="false" /></div>
+                <div class="vocab-col-del"><button class="remove-row" type="button">🗑️</button></div>
             `;
-            const eng = tr.querySelector('.english-input');
-            const cz = tr.querySelector('.czech-input');
-            const rm = tr.querySelector('.remove-row');
+            const eng = div.querySelector('.english-input');
+            const cz = div.querySelector('.czech-input');
+            const rm = div.querySelector('.remove-row');
             eng.placeholder = t('placeholderForeign');
             cz.placeholder = t('placeholderCzech');
             rm.title = t('removeRowTitle');
-            return tr;
+            return div;
         }
 
         function addVocabularyRow() {
