@@ -1509,11 +1509,9 @@
             let _pollCount = 0;
             const _pollInterval = setInterval(() => {
                 _loadVoices();
-                if (_voicesReady) {
+                if (_voicesReady || ++_pollCount > 15) {
                     clearInterval(_pollInterval);
-                    updateVoiceSelector();
-                } else if (++_pollCount > 15) {
-                    clearInterval(_pollInterval);
+                    // Selector se zobrazí až při prvním kliknutí na 🔊, ne automaticky
                 }
             }, 200);
         }
