@@ -102,6 +102,37 @@
             scrollbar-width: thin;
         }
 
+        .voice-selector-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: -16px 0 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .voice-selector-label {
+            font-size: 12px;
+            color: #d0d3ff;
+            white-space: nowrap;
+        }
+
+        .voice-selector-select {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.3);
+            color: #ecf0f1;
+            cursor: pointer;
+            max-width: 220px;
+        }
+
+        .voice-selector-select option {
+            background: #1a1a2e;
+            color: #ecf0f1;
+        }
+
         .lang-switcher::-webkit-scrollbar {
             height: 4px;
         }
@@ -968,6 +999,11 @@
                 <button type="button" class="lang-btn" data-lang="sv" title="Svenska"><img src="https://flagcdn.com/h20/se.png" height="14" alt="SE"> SV</button>
             </div>
 
+            <div class="voice-selector-row" id="voice-selector-row" style="display:none;">
+                <span class="voice-selector-label" id="voice-selector-label">🔊 Hlas:</span>
+                <select class="voice-selector-select" id="voice-selector"></select>
+            </div>
+
             <h1 class="app-title">🔐 TREZOR</h1>
             <p class="app-subtitle" id="app-subtitle">Interactive language learning game</p>
             
@@ -1473,8 +1509,25 @@
             let _pollCount = 0;
             const _pollInterval = setInterval(() => {
                 _loadVoices();
-                if (_voicesReady || ++_pollCount > 15) clearInterval(_pollInterval);
+                if (_voicesReady) {
+                    clearInterval(_pollInterval);
+                    updateVoiceSelector();
+                } else if (++_pollCount > 15) {
+                    clearInterval(_pollInterval);
+                }
             }, 200);
+        }
+
+        // Kvalitní hlasy mají v názvu tato klíčová slova
+        const QUALITY_KEYWORDS = ['enhanced', 'premium', 'natural', 'neural', 'wavenet', 'studio', 'polyglot'];
+
+        function _scoreVoice(voice) {
+            const name = (voice.name || '').toLowerCase();
+            // Nejvyšší skóre = nejkvalitnější hlas
+            if (QUALITY_KEYWORDS.some(k => name.includes(k))) return 3;
+            if (voice.localService === false) return 2; // online hlasy bývají kvalitnější
+            if (voice.localService === true) return 1;
+            return 0;
         }
 
         function _findVoice(langCode) {
@@ -1483,18 +1536,67 @@
             const lc = langCode.toLowerCase();
             const base = lc.split('-')[0];
 
-            // 1. Přesná shoda (en-GB, de-DE …)
-            let v = voices.find(x => x.lang.toLowerCase() === lc);
-            if (v) return v;
-            // 2. Začíná kódem (en-GB začíná "en-gb")
-            v = voices.find(x => x.lang.toLowerCase().startsWith(lc));
-            if (v) return v;
-            // 3. Stejný základní jazyk (en, de, fr …)
-            v = voices.find(x => x.lang.toLowerCase().startsWith(base + '-'));
-            if (v) return v;
-            // 4. Jen základní kód
-            v = voices.find(x => x.lang.toLowerCase() === base);
-            return v || null;
+            // Filtruj kandidáty podle jazyka (přesná shoda → začátek → základní kód)
+            let candidates = voices.filter(x => x.lang.toLowerCase() === lc);
+            if (!candidates.length) candidates = voices.filter(x => x.lang.toLowerCase().startsWith(lc));
+            if (!candidates.length) candidates = voices.filter(x => x.lang.toLowerCase().startsWith(base + '-'));
+            if (!candidates.length) candidates = voices.filter(x => x.lang.toLowerCase() === base);
+            if (!candidates.length) return null;
+
+            // Seřaď podle kvality a vrať nejlepší
+            candidates.sort((a, b) => _scoreVoice(b) - _scoreVoice(a));
+            return candidates[0];
+        }
+
+        // Vrátí všechny dostupné hlasy pro daný jazyk seřazené podle kvality
+        function _getVoicesForLang(langCode) {
+            const voices = _voicesCache;
+            if (!voices.length) return [];
+            const lc = langCode.toLowerCase();
+            const base = lc.split('-')[0];
+            let candidates = voices.filter(x =>
+                x.lang.toLowerCase() === lc ||
+                x.lang.toLowerCase().startsWith(lc) ||
+                x.lang.toLowerCase().startsWith(base + '-')
+            );
+            candidates.sort((a, b) => _scoreVoice(b) - _scoreVoice(a));
+            return candidates;
+        }
+
+        let _selectedVoice = null; // uživatelem (nebo automaticky) vybraný hlas
+
+        function updateVoiceSelector() {
+            const row = document.getElementById('voice-selector-row');
+            const sel = document.getElementById('voice-selector');
+            const lbl = document.getElementById('voice-selector-label');
+
+            const targetLang = SPEECH_LANG[currentLang] || 'en-US';
+            const voices = _getVoicesForLang(targetLang);
+
+            // Vždy nastav nejlepší dostupný hlas
+            _selectedVoice = voices[0] || null;
+
+            if (!row || !sel) return;
+
+            if (voices.length <= 1) {
+                row.style.display = 'none';
+                return;
+            }
+
+            sel.innerHTML = '';
+            voices.forEach((v, i) => {
+                const opt = document.createElement('option');
+                const quality = _scoreVoice(v) >= 3 ? ' ⭐' : _scoreVoice(v) >= 2 ? ' ✓' : '';
+                opt.value = i;
+                opt.textContent = v.name + quality;
+                sel.appendChild(opt);
+            });
+
+            row.style.display = 'flex';
+            sel.onchange = () => { _selectedVoice = voices[parseInt(sel.value)]; };
+
+            const langNames = { en:'EN', us:'EN', de:'DE', es:'ES', fr:'FR', ru:'RU', it:'IT', sv:'SV', pt:'PT', pl:'PL', uk:'UA' };
+            if (lbl) lbl.textContent = '🔊 ' + (langNames[currentLang] || '') + ' hlas:';
         }
 
         function speakForeignWord(text) {
@@ -1506,29 +1608,32 @@
                 const utterance  = new SpeechSynthesisUtterance(text);
                 utterance.rate   = 0.9;
 
-                if (_voicesReady) {
-                    // Hlasy jsou načteny — vyber správný
-                    const voice = _findVoice(targetLang);
+                const doSpeak = () => {
+                    // Aktualizuj výběr hlasu (nastaví _selectedVoice na nejlepší dostupný)
+                    updateVoiceSelector();
+                    const voice = _selectedVoice || _findVoice(targetLang);
                     if (voice) {
                         utterance.voice = voice;
                         utterance.lang  = voice.lang;
                     } else {
-                        // Hlas pro jazyk chybí — nastav alespoň lang kód
+                        // Žádný hlas nenalezen — alespoň nastav lang, prohlížeč zkusí sám
                         utterance.lang = targetLang;
                     }
+                    window.speechSynthesis.cancel();
                     window.speechSynthesis.speak(utterance);
+                };
+
+                if (_voicesReady) {
+                    doSpeak();
                 } else {
-                    // Hlasy ještě nejsou — počkej max 1s, pak mluv s lang kódem
+                    // Hlasy ještě nejsou načteny — počkej max 2s
                     utterance.lang = targetLang;
-                    let spoken = false;
+                    let attempts = 0;
                     const trySpeak = setInterval(() => {
                         _loadVoices();
-                        if (_voicesReady || ++spoken > 5) {
+                        if (_voicesReady || ++attempts > 10) {
                             clearInterval(trySpeak);
-                            const voice = _findVoice(targetLang);
-                            if (voice) { utterance.voice = voice; utterance.lang = voice.lang; }
-                            window.speechSynthesis.cancel();
-                            window.speechSynthesis.speak(utterance);
+                            doSpeak();
                         }
                     }, 200);
                 }
