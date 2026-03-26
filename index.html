@@ -274,28 +274,92 @@
         }
 
         .vocab-col-foreign {
-            flex: 47;
-            padding: 10px 8px;
+            flex: 1 1 0;
+            padding: 8px 6px;
             min-width: 0;
         }
 
         .vocab-col-czech {
-            flex: 47;
-            padding: 10px 8px;
+            flex: 1 1 0;
+            padding: 8px 6px;
             min-width: 0;
-            border-left: 1px solid rgba(255,255,255,0.2);
+            border-left: 1px solid #ecf0f1;
         }
 
         .vocab-header .vocab-col-czech {
             border-left: 1px solid rgba(255,255,255,0.3);
         }
 
-        .vocab-col-del {
-            flex: 0 0 44px;
+        .vocab-col-num {
+            flex: 0 0 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #aaa;
+            background: #f8f9fa;
+            border-right: 1px solid #ecf0f1;
+        }
+
+        .vocab-header .vocab-col-num {
+            background: #2980b9;
+            color: rgba(255,255,255,0.6);
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .vocab-col-del {
+            flex: 0 0 86px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+            padding: 4px 8px 4px 4px;
+        }
+
+        .remove-row {
+            flex-shrink: 0;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 2px 4px;
+            transition: transform 0.2s, filter 0.2s;
+            line-height: 1;
+        }
+
+        .remove-row:hover {
+            transform: scale(1.2);
+            filter: brightness(0.8);
+        }
+
+        .add-row-inline {
+            display: none;
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: normal;
+            word-break: keep-all;
+            transition: background 0.2s;
+            line-height: 1.25;
+            text-align: center;
+            padding: 4px 2px;
+        }
+
+        .add-row-inline:hover {
+            background: #2980b9;
+        }
+
+        .add-row-inline:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
         }
 
         .vocabulary-table input {
@@ -326,19 +390,7 @@
             font-size: 13px;
         }
 
-        .remove-row {
-            background: transparent;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px;
-            transition: transform 0.2s, filter 0.2s;
-        }
 
-        .remove-row:hover {
-            transform: scale(1.2);
-            filter: brightness(0.8);
-        }
 
         .table-controls {
             width: 100%;
@@ -401,6 +453,7 @@
 
         .start-game-button:disabled {
             background: #95a5a6;
+            color: white;
             cursor: not-allowed;
             opacity: 0.7;
         }
@@ -1178,6 +1231,7 @@
                 <div class="vocabulary-table-container">
                     <div class="vocabulary-table">
                         <div class="vocab-header">
+                            <div class="vocab-col-num">#</div>
                             <div class="vocab-col-foreign" id="vocab-th-foreign">English</div>
                             <div class="vocab-col-czech">Česky</div>
                             <div class="vocab-col-del"></div>
@@ -1823,9 +1877,13 @@
             const div = document.createElement('div');
             div.className = 'vocab-row';
             div.innerHTML = `
+                <div class="vocab-col-num row-num"></div>
                 <div class="vocab-col-foreign"><input type="text" class="english-input" inputmode="text" autocorrect="off" autocapitalize="none" spellcheck="false" /></div>
                 <div class="vocab-col-czech"><input type="text" class="czech-input" inputmode="text" autocorrect="off" autocapitalize="none" spellcheck="false" /></div>
-                <div class="vocab-col-del"><button class="remove-row" type="button">🗑️</button></div>
+                <div class="vocab-col-del">
+                    <button class="remove-row" type="button">🗑️</button>
+                    <button class="add-row-inline" type="button">přidat<br>řádek</button>
+                </div>
             `;
             const eng = div.querySelector('.english-input');
             const cz = div.querySelector('.czech-input');
@@ -1836,12 +1894,40 @@
             return div;
         }
 
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('.vocab-row');
+            let filledCount = 0;
+            rows.forEach((row, i) => {
+                const eng = row.querySelector('.english-input')?.value?.trim();
+                const cz  = row.querySelector('.czech-input')?.value?.trim();
+                const num = row.querySelector('.row-num');
+                const addBtn = row.querySelector('.add-row-inline');
+                const isLast = i === rows.length - 1;
+                const atMax  = rows.length >= MAX_ROWS;
+
+                // Číslo — pouze pokud je řádek vyplněný
+                if (num) {
+                    if (eng || cz) {
+                        filledCount++;
+                        num.textContent = filledCount;
+                    } else {
+                        num.textContent = '';
+                    }
+                }
+                // Tlačítko Přidej řádek — jen u posledního řádku a pokud není max
+                if (addBtn) {
+                    addBtn.style.display = (isLast && !atMax) ? 'inline-block' : 'none';
+                }
+            });
+        }
+
         function addVocabularyRow() {
             const rowCount = document.querySelectorAll('.english-input').length;
             if (rowCount >= MAX_ROWS) return;
 
             const newRow = createVocabRow();
             vocabBody.appendChild(newRow);
+            updateRowNumbers();
         }
 
         function updateRowCounter() {
@@ -2028,19 +2114,28 @@
         });
 
         document.addEventListener('click', (e) => {
+            // Smazání řádku
             if (e.target.classList.contains('remove-row')) {
                 const rowCount = document.querySelectorAll('.english-input').length;
-
                 if (rowCount > 1) {
-                    // Řádky jsou nyní div.vocab-row (ne tr)
                     const row = e.target.closest('.vocab-row');
                     if (row) {
                         row.remove();
                         updateRowCounter();
+                        updateRowNumbers();
                         updateLocks();
                         addRowBtn.disabled = false;
                     }
                 }
+            }
+            // Přidání řádku inline tlačítkem
+            if (e.target.classList.contains('add-row-inline')) {
+                addVocabularyRow();
+                updateRowCounter();
+                updateLocks();
+                // Focus na nový řádek
+                const inputs = document.querySelectorAll('.english-input');
+                if (inputs.length) inputs[inputs.length - 1].focus();
             }
         });
 
@@ -2048,6 +2143,7 @@
             if (e.target.classList.contains('english-input') ||
                 e.target.classList.contains('czech-input')) {
                 updateLocks();
+                updateRowNumbers();
             }
         });
 
@@ -2062,8 +2158,8 @@
                 return;
             }
 
-            const allRows = Array.from(document.querySelectorAll('#vocab-rows tr'));
-            const targetRow = target.closest('tr');
+            const allRows = Array.from(document.querySelectorAll('#vocab-rows .vocab-row'));
+            const targetRow = target.closest('.vocab-row');
             const startIndex = Math.max(0, allRows.indexOf(targetRow));
 
             if (importExcelData(pastedText, startIndex)) {
@@ -2515,6 +2611,7 @@
 
             updateLocks();
             updateRowCounter();
+            updateRowNumbers();
         }
 
         function libraryInit() {
@@ -2602,6 +2699,7 @@
 
             applyLanguage(currentLang);
             libraryInit();
+            updateRowNumbers();
 
             const firstEng = document.querySelector('.english-input');
             if (firstEng) {
