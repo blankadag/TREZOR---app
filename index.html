@@ -977,6 +977,130 @@
             .vocabulary-table input { font-size: 16px; }
             .safe-container { height: clamp(260px, 70vw, 380px); }
         }
+
+        /* ===== KNIHOVNA SLOVNÍČKŮ ===== */
+        .library-panel {
+            width: 100%;
+            max-width: 900px;
+            margin-bottom: 12px;
+        }
+
+        .library-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .library-label {
+            font-size: 13px;
+            color: #d0d3ff;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+
+        .library-select {
+            flex: 1;
+            min-width: 140px;
+            max-width: 260px;
+            font-size: 13px;
+            padding: 5px 10px;
+            border-radius: 7px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.3);
+            color: #ecf0f1;
+            cursor: pointer;
+        }
+
+        .library-select option {
+            background: #1a1a2e;
+            color: #ecf0f1;
+        }
+
+        .library-btn {
+            padding: 5px 12px;
+            border-radius: 7px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.25);
+            color: #ecf0f1;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .library-btn:hover {
+            background: rgba(52,152,219,0.3);
+            border-color: #3498db;
+        }
+
+        .library-btn.danger:hover {
+            background: rgba(231,76,60,0.3);
+            border-color: #e74c3c;
+        }
+
+        .library-save-row {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .library-save-row.visible {
+            display: flex;
+        }
+
+        .library-name-input {
+            flex: 1;
+            min-width: 160px;
+            max-width: 280px;
+            font-size: 13px;
+            padding: 5px 10px;
+            border-radius: 7px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.3);
+            color: #ecf0f1;
+            -webkit-appearance: none;
+        }
+
+        .library-name-input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .library-confirm-btn {
+            padding: 5px 14px;
+            border-radius: 7px;
+            border: none;
+            background: #27ae60;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .library-confirm-btn:hover {
+            background: #229954;
+        }
+
+        .library-cancel-btn {
+            padding: 5px 10px;
+            border-radius: 7px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: transparent;
+            color: #ecf0f1;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .library-msg {
+            font-size: 12px;
+            color: #27ae60;
+            margin-top: 4px;
+            min-height: 16px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -1009,6 +1133,25 @@
             
             <div class="instructions">
                 <p id="instructions-text">What words and phrases do you want to learn?</p>
+            </div>
+
+            <!-- KNIHOVNA SLOVNÍČKŮ -->
+            <div class="library-panel" id="library-panel">
+                <div class="library-bar">
+                    <span class="library-label">📚 Moje slovníčky:</span>
+                    <select class="library-select" id="library-select">
+                        <option value="">— vybrat uložený seznam —</option>
+                    </select>
+                    <button class="library-btn" id="library-load-btn" title="Načíst vybraný seznam">📂 Načíst</button>
+                    <button class="library-btn" id="library-save-btn" title="Uložit aktuální seznam">💾 Uložit</button>
+                    <button class="library-btn danger" id="library-delete-btn" title="Smazat vybraný seznam">🗑️ Smazat</button>
+                </div>
+                <div class="library-save-row" id="library-save-row">
+                    <input type="text" class="library-name-input" id="library-name-input" placeholder="Název seznamu (např. Barvy, Čísla…)" maxlength="40" />
+                    <button class="library-confirm-btn" id="library-confirm-btn">Uložit</button>
+                    <button class="library-cancel-btn" id="library-cancel-btn">Zrušit</button>
+                </div>
+                <div class="library-msg" id="library-msg"></div>
             </div>
 
             <div class="vocabulary-panel">
@@ -2281,6 +2424,144 @@
             showNextWord();
         }
 
+
+        // ===== KNIHOVNA SLOVNÍČKŮ (localStorage) =====
+        const LIBRARY_KEY = 'trezor-library';
+
+        function libraryLoad() {
+            try { return JSON.parse(localStorage.getItem(LIBRARY_KEY) || '{}'); }
+            catch(e) { return {}; }
+        }
+
+        function librarySave(db) {
+            try { localStorage.setItem(LIBRARY_KEY, JSON.stringify(db)); } catch(e) {}
+        }
+
+        function libraryRefreshSelect() {
+            const sel = document.getElementById('library-select');
+            if (!sel) return;
+            const db = libraryLoad();
+            const keys = Object.keys(db).sort();
+            const current = sel.value;
+            sel.innerHTML = '<option value="">— vybrat uložený seznam —</option>';
+            keys.forEach(k => {
+                const opt = document.createElement('option');
+                opt.value = k;
+                opt.textContent = k + ' (' + db[k].words.length + ' slov)';
+                sel.appendChild(opt);
+            });
+            if (current && db[current]) sel.value = current;
+        }
+
+        function libraryShowMsg(msg, color) {
+            const el = document.getElementById('library-msg');
+            if (!el) return;
+            el.textContent = msg;
+            el.style.color = color || '#27ae60';
+            setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 3000);
+        }
+
+        function libraryGetCurrentWords() {
+            const rows = [];
+            document.querySelectorAll('.vocab-row').forEach(row => {
+                const eng = row.querySelector('.english-input')?.value?.trim();
+                const cz  = row.querySelector('.czech-input')?.value?.trim();
+                if (eng || cz) rows.push({ english: eng || '', czech: cz || '' });
+            });
+            return rows;
+        }
+
+        function libraryLoadWords(words) {
+            // Vymaž současné řádky
+            const tbody = document.getElementById('vocab-rows');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            // Přidej řádky ze seznamu
+            words.forEach(() => addVocabularyRow());
+
+            const engInputs = document.querySelectorAll('.english-input');
+            const czInputs  = document.querySelectorAll('.czech-input');
+            words.forEach((w, i) => {
+                if (engInputs[i]) engInputs[i].value = w.english;
+                if (czInputs[i])  czInputs[i].value  = w.czech;
+            });
+
+            updateLocks();
+            updateRowCounter();
+        }
+
+        function libraryInit() {
+            libraryRefreshSelect();
+
+            document.getElementById('library-save-btn')?.addEventListener('click', () => {
+                const row = document.getElementById('library-save-row');
+                const input = document.getElementById('library-name-input');
+                if (!row) return;
+                row.classList.toggle('visible');
+                if (row.classList.contains('visible') && input) input.focus();
+            });
+
+            document.getElementById('library-cancel-btn')?.addEventListener('click', () => {
+                document.getElementById('library-save-row')?.classList.remove('visible');
+                const input = document.getElementById('library-name-input');
+                if (input) input.value = '';
+            });
+
+            document.getElementById('library-confirm-btn')?.addEventListener('click', () => {
+                const input = document.getElementById('library-name-input');
+                const name = input?.value?.trim();
+                if (!name) { libraryShowMsg('Zadej název seznamu!', '#e74c3c'); return; }
+
+                const words = libraryGetCurrentWords();
+                if (words.length === 0) { libraryShowMsg('Seznam je prázdný!', '#e74c3c'); return; }
+
+                const db = libraryLoad();
+                db[name] = { lang: currentLang, words, saved: new Date().toLocaleDateString('cs-CZ') };
+                librarySave(db);
+                libraryRefreshSelect();
+
+                document.getElementById('library-select').value = name;
+                document.getElementById('library-save-row')?.classList.remove('visible');
+                if (input) input.value = '';
+                libraryShowMsg('✅ Seznam „' + name + '" uložen!');
+            });
+
+            document.getElementById('library-name-input')?.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') document.getElementById('library-confirm-btn')?.click();
+                if (e.key === 'Escape') document.getElementById('library-cancel-btn')?.click();
+            });
+
+            document.getElementById('library-load-btn')?.addEventListener('click', () => {
+                const sel = document.getElementById('library-select');
+                const name = sel?.value;
+                if (!name) { libraryShowMsg('Nejdřív vyber seznam ze seznamu.', '#e74c3c'); return; }
+
+                const db = libraryLoad();
+                const entry = db[name];
+                if (!entry) { libraryShowMsg('Seznam nenalezen.', '#e74c3c'); return; }
+
+                // Přepni jazyk pokud je jiný
+                if (entry.lang && entry.lang !== currentLang) applyLanguage(entry.lang);
+
+                libraryLoadWords(entry.words);
+                libraryShowMsg('✅ Načten seznam „' + name + '"');
+            });
+
+            document.getElementById('library-delete-btn')?.addEventListener('click', () => {
+                const sel = document.getElementById('library-select');
+                const name = sel?.value;
+                if (!name) { libraryShowMsg('Nejdřív vyber seznam k smazání.', '#e74c3c'); return; }
+                if (!confirm('Opravdu smazat seznam „' + name + '"?')) return;
+
+                const db = libraryLoad();
+                delete db[name];
+                librarySave(db);
+                libraryRefreshSelect();
+                libraryShowMsg('🗑️ Seznam „' + name + '" smazán.', '#e74c3c');
+            });
+        }
+        // ===== /KNIHOVNA =====
         window.addEventListener('DOMContentLoaded', () => {
             try {
                 const saved = localStorage.getItem('trezor-lang');
@@ -2294,6 +2575,7 @@
             }
 
             applyLanguage(currentLang);
+            libraryInit();
 
             const firstEng = document.querySelector('.english-input');
             if (firstEng) {
