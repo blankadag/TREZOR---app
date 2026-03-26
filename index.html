@@ -182,7 +182,7 @@
         .instructions {
             background: #e8f4f8;
             border-left: 4px solid #3498db;
-            padding: 15px 20px;
+            padding: 18px 22px;
             margin-bottom: 20px;
             border-radius: 8px;
             width: 100%;
@@ -191,9 +191,22 @@
         }
 
         .instructions p {
-            margin: 5px 0;
+            margin: 0;
             font-size: 14px;
             color: #2c3e50;
+            line-height: 1.7;
+        }
+
+        .instructions ul {
+            margin: 8px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .instructions ul li {
+            font-size: 14px;
+            color: #2c3e50;
+            line-height: 1.7;
+            margin-bottom: 4px;
         }
 
         .vocabulary-panel {
@@ -1132,7 +1145,14 @@
             <p class="app-subtitle" id="app-subtitle">Efektivní procvičování slovíček a frází interaktivní hrou</p>
             
             <div class="instructions">
-                <p id="instructions-text">What words and phrases do you want to learn?</p>
+                <p id="instructions-text">
+                    <strong>Jaká slovíčka a fráze spolu dnes procvičíme?</strong><br>
+                    Zvolenou slovní zásobu vlož do řádků níže. Vyplň alespoň jeden z celkového počtu třiceti řádků:
+                </p>
+                <ul>
+                    <li>Ručním vyplněním řádků nebo vložením zkopírovaných dvou sloupců z vlastní tabulky (<em><span id="inst-lang-name">English</span> + TAB + Česky</em>). Zapsaná slovíčka lze následně uložit jako samostatný slovníček do sekce <em>Moje slovníčky</em>.</li>
+                    <li>Načtením ze seznamu uloženého v sekci <em>Moje slovníčky</em>. Vytvořit si můžeš libovolný počet slovníčků pod různými názvy. Maximální počet slovíček a frází v jednom slovníčku je 30.</li>
+                </ul>
             </div>
 
             <!-- KNIHOVNA SLOVNÍČKŮ -->
@@ -1167,17 +1187,16 @@
                 </div>
 
                 <div class="table-controls">
-                    <button id="add-row-btn" class="add-row-button">
-                        ➕ Add row
-                    </button>
-                    <div class="row-counter" id="row-counter">(0/12 rows)</div>
-                    <div class="paste-hint" id="paste-hint">Tip: paste 2-column data from Excel (English + TAB + Česky).</div>
+                    <!-- Skryté prvky zachované pro JS funkčnost -->
+                    <button id="add-row-btn" class="add-row-button" style="display:none;"></button>
+                    <div class="row-counter" id="row-counter" style="display:none;"></div>
+                    <div class="paste-hint" id="paste-hint" style="display:none;"></div>
 
                     <button id="start-game-button" class="start-game-button" disabled>
-                        Start game
+                        Spustit hru
                     </button>
-                    <div id="validation-message" class="validation-message error">
-                        Fill in at least one word pair (foreign language and Česky).
+                    <div id="validation-message" class="validation-message error" style="display:none;">
+                        Fill in at least one word pair.
                     </div>
                 </div>
             </div>
@@ -1218,7 +1237,7 @@
                 pasteTip: 'Tip: Paste 2-column data from your spreadsheet (English + TAB + Česky).',
                 addRow: '➕ Add row',
                 rows: 'rows',
-                startGame: 'Start game',
+                startGame: 'Spustit hru',
                 validationEmpty: 'Fill in at least one word pair.',
                 validationReady: 'Ready ✓ ({count} words)',
                 placeholderForeign: 'English',
@@ -1248,7 +1267,7 @@
                 pasteTip: 'Tip: Paste 2-column data from your spreadsheet (English + TAB + Česky).',
                 addRow: '➕ Add row',
                 rows: 'rows',
-                startGame: 'Start game',
+                startGame: 'Spustit hru',
                 validationEmpty: 'Fill in at least one word pair.',
                 validationReady: 'Ready ✓ ({count} words)',
                 placeholderForeign: 'English',
@@ -1278,7 +1297,7 @@
                 pasteTip: 'Tipp: Daten aus zwei Spalten der Tabellenkalkulation einfügen (Deutsch + TAB + Česky).',
                 addRow: '➕ Zeile hinzufügen',
                 rows: 'Zeilen',
-                startGame: 'Spiel starten',
+                startGame: 'Spustit hru',
                 validationEmpty: 'Fülle mindestens ein Wortpaar aus.',
                 validationReady: 'Bereit ✓ ({count} Wörter)',
                 placeholderForeign: 'Deutsch',
@@ -1308,7 +1327,7 @@
                 pasteTip: 'Consejo: pega datos de dos columnas desde tu hoja de cálculo (Español + TAB + Česky).',
                 addRow: '➕ Añadir fila',
                 rows: 'filas',
-                startGame: 'Comenzar juego',
+                startGame: 'Spustit hru',
                 validationEmpty: 'Completa al menos un par de palabras.',
                 validationReady: 'Listo ✓ ({count} palabras)',
                 placeholderForeign: 'Español',
@@ -1338,7 +1357,7 @@
                 pasteTip: 'Astuce : collez des données en deux colonnes depuis votre tableur (Français + TAB + Česky).',
                 addRow: '➕ Ajouter une ligne',
                 rows: 'lignes',
-                startGame: 'Lancer le jeu',
+                startGame: 'Spustit hru',
                 validationEmpty: 'Remplis au moins une paire de mots.',
                 validationReady: 'Prêt ✓ ({count} mots)',
                 placeholderForeign: 'Français',
@@ -1368,7 +1387,7 @@
                 pasteTip: 'Совет: вставьте данные из двух столбцов таблицы (Русский + TAB + Česky).',
                 addRow: '➕ Добавить строку',
                 rows: 'строк',
-                startGame: 'Начать игру',
+                startGame: 'Spustit hru',
                 validationEmpty: 'Заполните хотя бы одну пару слов.',
                 validationReady: 'Готово ✓ ({count} слов)',
                 placeholderForeign: 'Русский',
@@ -1398,7 +1417,7 @@
                 pasteTip: 'Suggerimento: incolla dati da due colonne del foglio di calcolo (Italiano + TAB + Česky).',
                 addRow: '➕ Aggiungi riga',
                 rows: 'righe',
-                startGame: 'Inizia gioco',
+                startGame: 'Spustit hru',
                 validationEmpty: 'Compila almeno una coppia di parole.',
                 validationReady: 'Pronto ✓ ({count} parole)',
                 placeholderForeign: 'Italiano',
@@ -1428,7 +1447,7 @@
                 pasteTip: 'Tips: klistra in två kolumner från ditt kalkylblad (Svenska + TAB + Česky).',
                 addRow: '➕ Lägg till rad',
                 rows: 'rader',
-                startGame: 'Starta spelet',
+                startGame: 'Spustit hru',
                 validationEmpty: 'Fyll i minst ett ordpar.',
                 validationReady: 'Klart ✓ ({count} ord)',
                 placeholderForeign: 'Svenska',
@@ -1458,7 +1477,7 @@
                 pasteTip: 'Dica: cola dados de duas colunas da tua folha de cálculo (Português + TAB + Česky).',
                 addRow: '➕ Adicionar linha',
                 rows: 'linhas',
-                startGame: 'Começar jogo',
+                startGame: 'Spustit hru',
                 validationEmpty: 'Preenche pelo menos um par de palavras.',
                 validationReady: 'Pronto ✓ ({count} palavras)',
                 placeholderForeign: 'Português',
@@ -1488,7 +1507,7 @@
                 pasteTip: 'Wskazówka: wklej dane z dwóch kolumn arkusza kalkulacyjnego (Polski + TAB + Česky).',
                 addRow: '➕ Dodaj wiersz',
                 rows: 'wierszy',
-                startGame: 'Rozpocznij grę',
+                startGame: 'Spustit hru',
                 validationEmpty: 'Uzupełnij co najmniej jedną parę słów.',
                 validationReady: 'Gotowe ✓ ({count} słów)',
                 placeholderForeign: 'Polski',
@@ -1518,7 +1537,7 @@
                 pasteTip: 'Порада: вставте дані з двох стовпців таблиці (Українська + TAB + Česky).',
                 addRow: '➕ Додати рядок',
                 rows: 'рядків',
-                startGame: 'Почати гру',
+                startGame: 'Spustit hru',
                 validationEmpty: 'Заповни хоча б одну пару слів.',
                 validationReady: 'Готово ✓ ({count} слів)',
                 placeholderForeign: 'Українська',
@@ -1592,8 +1611,9 @@
             const sub = document.getElementById('app-subtitle');
             if (sub) sub.textContent = t('subtitle');
 
-            const inst = document.getElementById('instructions-text');
-            if (inst) inst.textContent = t('instructions');
+            // Instrukce jsou pevně česky — aktualizuj jen název jazyka v závorce
+            const instLangName = document.getElementById('inst-lang-name');
+            if (instLangName) instLangName.textContent = t('foreignColumn');
 
             const thF = document.getElementById('vocab-th-foreign');
             if (thF) thF.textContent = t('foreignColumn');
