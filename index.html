@@ -2012,7 +2012,8 @@
                 const rowCount = document.querySelectorAll('.english-input').length;
 
                 if (rowCount > 1) {
-                    const row = e.target.closest('tr');
+                    // Řádky jsou nyní div.vocab-row (ne tr)
+                    const row = e.target.closest('.vocab-row');
                     if (row) {
                         row.remove();
                         updateRowCounter();
