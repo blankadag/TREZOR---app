@@ -2397,32 +2397,37 @@
         }
 
         function repeatGame() {
+            // 1. Zavři pergamen (overlay)
+            const scrollOverlay = document.getElementById('scroll-overlay');
+            if (scrollOverlay) scrollOverlay.remove();
+
+            // 2. Obnov viditelnost trezoru
+            const safeEl3 = document.getElementById('safe');
+            if (safeEl3) safeEl3.style.visibility = 'visible';
+
+            // 3. Zavři dvířka trezoru
+            const safeDoor = document.getElementById('safe-door');
+            if (safeDoor) safeDoor.classList.remove('open');
+
+            // 4. Skryj herní panel
+            const gamePanel = document.getElementById('game-panel');
+            if (gamePanel) gamePanel.style.display = 'none';
+
+            // 5. Zobraz úvodní stranu se slovíčky (hráč si je může upravit)
+            const leftSection = document.querySelector('.left-section');
+            if (leftSection) leftSection.classList.remove('hidden');
+            const rightSection = document.querySelector('.right-section');
+            if (rightSection) rightSection.classList.remove('game-mode');
+
+            // 6. Reset herního stavu — zámky se přepočítají podle tabulky
             unlockedCount = 0;
             incorrectWords = [];
             correctWords = [];
-            
-            document.querySelectorAll('.lock').forEach(lock => {
-                lock.classList.remove('unlocked');
-                lock.classList.add('locked');
-            });
-            
-            const scrollOverlay = document.getElementById('scroll-overlay');
-            if (scrollOverlay) scrollOverlay.remove();
-            // Restore safe visibility
-            const safeEl3 = document.getElementById('safe');
-            if (safeEl3) safeEl3.style.visibility = 'visible';
-            
-            const safeDoor = document.getElementById('safe-door');
-            if (safeDoor) {
-                safeDoor.classList.remove('open');
-            }
-            
-            const gamePanel = document.getElementById('game-panel');
-            if (gamePanel) {
-                gamePanel.style.display = 'block';
-            }
-            
-            showNextWord();
+            updateLocks();
+
+            // 7. Scrolluj plynule nahoru na tabulku se slovíčky
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            leftSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
 
