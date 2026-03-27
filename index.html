@@ -298,9 +298,9 @@
             justify-content: center;
             font-size: 12px;
             font-weight: 700;
-            color: #aaa;
-            background: #f8f9fa;
-            border-right: 1px solid #ecf0f1;
+            color: #555;
+            background: #f0f4f8;
+            border-right: 1px solid #dde3ea;
         }
 
         .vocab-header .vocab-col-num {
@@ -1915,9 +1915,13 @@
                     }
                 }
             });
-            // Aktualizuj stav tlačítka přidat řádek
+            // Skryj tlačítko "Přidat řádek" při dosažení MAX_ROWS
             const addTopBtn = document.getElementById('vocab-add-top-btn');
-            if (addTopBtn) addTopBtn.disabled = rows.length >= MAX_ROWS;
+            if (addTopBtn) {
+                const atMax = rows.length >= MAX_ROWS;
+                addTopBtn.disabled = atMax;
+                addTopBtn.style.display = atMax ? 'none' : '';
+            }
         }
 
         function addVocabularyRow() {
