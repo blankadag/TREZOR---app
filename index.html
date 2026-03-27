@@ -304,13 +304,8 @@
         }
 
         .vocab-header .vocab-col-num {
-            background: #2980b9;
-            color: rgba(255,255,255,0.6);
-            border-right: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .vocab-col-trash-header {
-            flex: 0 0 48px;
+            background: #3498db;
+            border-right: none;
         }
 
         .vocab-col-del {
@@ -339,28 +334,25 @@
             filter: brightness(0.8);
         }
 
-        /* Tlačítko přidat řádek — nad tabulkou vpravo */
+        /* Tlačítko přidat řádek — pod tabulkou */
         .vocab-add-row-bar {
             display: flex;
-            justify-content: flex-end;
+            justify-content: center;
+            margin-top: 10px;
             margin-bottom: 4px;
         }
 
         .vocab-add-row-top-btn {
-            width: 48px;
-            height: 48px;
             background: #3498db;
             color: white;
             border: none;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 700;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
-            line-height: 1.3;
-            text-align: center;
-            white-space: normal;
+            padding: 10px 22px;
+            white-space: nowrap;
             transition: background 0.2s;
-            padding: 4px 2px;
         }
 
         .vocab-add-row-top-btn:hover {
@@ -1223,7 +1215,7 @@
                 <div class="library-bar">
                     <span class="library-label">📚 Moje slovníčky:</span>
                     <select class="library-select" id="library-select">
-                        <option value="">— vybrat uložený seznam —</option>
+                        <option value="">— Vybrat z uložených —</option>
                     </select>
                     <button class="library-btn" id="library-load-btn" title="Načíst vybraný seznam">📂 Načíst</button>
                     <button class="library-btn" id="library-save-btn" title="Uložit aktuální seznam">💾 Uložit</button>
@@ -1238,19 +1230,20 @@
             </div>
 
             <div class="vocabulary-panel">
-                <div class="vocab-add-row-bar">
-                    <button class="vocab-add-row-top-btn" id="vocab-add-top-btn">přidat<br>řádek</button>
-                </div>
                 <div class="vocabulary-table-container">
                     <div class="vocabulary-table">
                         <div class="vocab-header">
-                            <div class="vocab-col-num">#</div>
+                            <div class="vocab-col-num"></div>
                             <div class="vocab-col-foreign" id="vocab-th-foreign">English</div>
                             <div class="vocab-col-czech">Česky</div>
-                            <div class="vocab-col-trash-header"></div>
+                            <div class="vocab-col-del"></div>
                         </div>
                         <div id="vocab-rows"></div>
                     </div>
+                </div>
+
+                <div class="vocab-add-row-bar">
+                    <button class="vocab-add-row-top-btn" id="vocab-add-top-btn">+ Přidat řádek</button>
                 </div>
 
                 <div class="table-controls">
@@ -2142,6 +2135,17 @@
                 e.target.classList.contains('czech-input')) {
                 updateLocks();
                 updateRowNumbers();
+
+                // Auto-scroll: pokud je hráč na posledním řádku, scrolluj k tlačítku
+                const rows = document.querySelectorAll('.vocab-row');
+                const currentRow = e.target.closest('.vocab-row');
+                const isLastRow = currentRow && currentRow === rows[rows.length - 1];
+                if (isLastRow) {
+                    const addBtn = document.getElementById('vocab-add-top-btn');
+                    if (addBtn && !addBtn.disabled) {
+                        addBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }
             }
         });
 
@@ -2563,7 +2567,7 @@
             const db = libraryLoad();
             const keys = Object.keys(db).sort();
             const current = sel.value;
-            sel.innerHTML = '<option value="">— vybrat uložený seznam —</option>';
+            sel.innerHTML = '<option value="">— Vybrat z uložených —</option>';
             keys.forEach(k => {
                 const opt = document.createElement('option');
                 opt.value = k;
