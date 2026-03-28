@@ -1745,6 +1745,7 @@
 
             updateRowCounter();
             updateLocks();
+            libraryRefreshSelect();
         }
 
         // ── SPEECH ─────────────────────────────────────────────────────────────
@@ -2646,7 +2647,8 @@
             const sel = document.getElementById('library-select');
             if (!sel) return;
             const db = libraryLoad();
-            const keys = Object.keys(db).sort();
+            // Zobraz pouze slovníčky pro aktuální jazyk
+            const keys = Object.keys(db).filter(k => db[k].lang === currentLang).sort();
             const current = sel.value;
             sel.innerHTML = '<option value="">— Vybrat z uložených —</option>';
             keys.forEach(k => {
@@ -2655,7 +2657,7 @@
                 opt.textContent = k + ' (' + db[k].words.length + ' slov)';
                 sel.appendChild(opt);
             });
-            if (current && db[current]) sel.value = current;
+            if (current && db[current] && db[current].lang === currentLang) sel.value = current;
         }
 
         function libraryShowMsg(msg, color) {
