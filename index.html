@@ -572,7 +572,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.75);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             z-index: 9999;
             display: flex;
             align-items: flex-start;
@@ -585,6 +585,25 @@
             /* Force new stacking context above everything */
             transform: translateZ(0);
             -webkit-transform: translateZ(0);
+        }
+
+        .scroll-overlay-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 680px;
+            gap: 24px;
+            margin: auto;
+        }
+
+        .button-container-outer {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+            padding-bottom: 20px;
         }
 
         @keyframes overlay-fade-in {
@@ -605,7 +624,6 @@
             transform-origin: top center;
             animation: scroll-unroll 0.8s ease 0.3s both;
             position: relative;
-            margin: auto;
         }
 
         @keyframes scroll-unroll {
@@ -1310,11 +1328,11 @@
                 scrollTitle: '🎉 Congratulations! 🎉',
                 scrollSubtitle: 'You have unlocked the safe box of knowledge.<br>Enjoy your success!',
                 vocabMastered: '📚 Vocabulary just mastered:',
-                copyExcel: '📋 Copy to clipboard for your spreadsheet',
+                copyExcel: '📋 Zkopírovat pro vložení do tabulky',
                 copySuccess: '✅ Copied! You can paste into Excel (Ctrl+V)',
                 copyFail: '❌ Copy failed. Try manually.',
-                repeatGame: '🔄 Repeat with the same vocabulary',
-                newGame: '✨ New game',
+                repeatGame: '🔄 Opakovat hru',
+                newGame: '✨ Nová hra',
                 removeRowTitle: 'Remove row',
                 speakTitle: 'Listen to pronunciation',
                 speakAria: 'Play pronunciation'
@@ -1340,11 +1358,11 @@
                 scrollTitle: '🎉 Congratulations! 🎉',
                 scrollSubtitle: 'You have unlocked the safe box of knowledge.<br>Enjoy your success!',
                 vocabMastered: '📚 Vocabulary just mastered:',
-                copyExcel: '📋 Copy to clipboard for your spreadsheet',
+                copyExcel: '📋 Zkopírovat pro vložení do tabulky',
                 copySuccess: '✅ Copied! You can paste into Excel (Ctrl+V)',
                 copyFail: '❌ Copy failed. Try manually.',
-                repeatGame: '🔄 Repeat with the same vocabulary',
-                newGame: '✨ New game',
+                repeatGame: '🔄 Opakovat hru',
+                newGame: '✨ Nová hra',
                 removeRowTitle: 'Remove row',
                 speakTitle: 'Listen to pronunciation',
                 speakAria: 'Play pronunciation'
@@ -1370,11 +1388,11 @@
                 scrollTitle: '🎉 Glückwunsch! 🎉',
                 scrollSubtitle: 'Du hast den Tresor des Wissens geöffnet.<br>Viel Freude am Erfolg!',
                 vocabMastered: '📚 Gemeisterte Vokabeln:',
-                copyExcel: '📋 In die Zwischenablage für Tabellenkalkulation kopieren',
+                copyExcel: '📋 Zkopírovat pro vložení do tabulky',
                 copySuccess: '✅ Kopiert! In Excel einfügen (Strg+V)',
                 copyFail: '❌ Kopieren fehlgeschlagen. Bitte manuell versuchen.',
-                repeatGame: '🔄 Mit demselben Wortschatz wiederholen',
-                newGame: '✨ Neues Spiel',
+                repeatGame: '🔄 Opakovat hru',
+                newGame: '✨ Nová hra',
                 removeRowTitle: 'Zeile entfernen',
                 speakTitle: 'Aussprache anhören',
                 speakAria: 'Aussprache abspielen'
@@ -1400,11 +1418,11 @@
                 scrollTitle: '🎉 ¡Enhorabuena! 🎉',
                 scrollSubtitle: 'Has abierto la caja fuerte del conocimiento.<br>¡Disfruta de tu éxito!',
                 vocabMastered: '📚 Vocabulario recién dominado:',
-                copyExcel: '📋 Copiar al portapapeles para tu hoja de cálculo',
+                copyExcel: '📋 Zkopírovat pro vložení do tabulky',
                 copySuccess: '✅ ¡Copiado! Puedes pegar en Excel (Ctrl+V)',
                 copyFail: '❌ Error al copiar. Prueba manualmente.',
-                repeatGame: '🔄 Repetir con el mismo vocabulario',
-                newGame: '✨ Nuevo juego',
+                repeatGame: '🔄 Opakovat hru',
+                newGame: '✨ Nová hra',
                 removeRowTitle: 'Quitar fila',
                 speakTitle: 'Escuchar pronunciación',
                 speakAria: 'Reproducir pronunciación'
@@ -1430,11 +1448,11 @@
                 scrollTitle: '🎉 Félicitations ! 🎉',
                 scrollSubtitle: 'Tu as ouvert le coffre du savoir.<br>Profite de ta réussite !',
                 vocabMastered: '📚 Vocabulaire maîtrisé :',
-                copyExcel: '📋 Copier dans le presse-papiers pour votre tableur',
+                copyExcel: '📋 Zkopírovat pro vložení do tabulky',
                 copySuccess: '✅ Copié ! Tu peux coller dans Excel (Ctrl+V)',
                 copyFail: '❌ Échec de la copie. Essaie manuellement.',
-                repeatGame: '🔄 Rejouer avec le même vocabulaire',
-                newGame: '✨ Nouvelle partie',
+                repeatGame: '🔄 Opakovat hru',
+                newGame: '✨ Nová hra',
                 removeRowTitle: 'Supprimer la ligne',
                 speakTitle: 'Écouter la prononciation',
                 speakAria: 'Lire la prononciation'
@@ -1460,11 +1478,11 @@
                 scrollTitle: '🎉 Поздравляем! 🎉',
                 scrollSubtitle: 'Ты открыл сейф знаний.<br>Наслаждайся успехом!',
                 vocabMastered: '📚 Освоенный словарь:',
-                copyExcel: '📋 Копировать в буфер обмена для таблицы',
+                copyExcel: '📋 Zkopírovat pro vložení do tabulky',
                 copySuccess: '✅ Скопировано! Вставьте в Excel (Ctrl+V)',
                 copyFail: '❌ Не удалось скопировать. Попробуйте вручную.',
-                repeatGame: '🔄 Повторить с тем же словарём',
-                newGame: '✨ Новая игра',
+                repeatGame: '🔄 Opakovat hru',
+                newGame: '✨ Nová hra',
                 removeRowTitle: 'Удалить строку',
                 speakTitle: 'Прослушать произношение',
                 speakAria: 'Воспроизвести произношение'
@@ -1490,11 +1508,11 @@
                 scrollTitle: '🎉 Congratulazioni! 🎉',
                 scrollSubtitle: 'Hai sbloccato la cassaforte della conoscenza.<br>Goditi il successo!',
                 vocabMastered: '📚 Vocabolario appena padroneggiato:',
-                copyExcel: '📋 Copia negli appunti per il foglio di calcolo',
+                copyExcel: '📋 Zkopírovat pro vložení do tabulky',
                 copySuccess: '✅ Copiato! Puoi incollare in Excel (Ctrl+V)',
                 copyFail: '❌ Copia non riuscita. Prova manualmente.',
-                repeatGame: '🔄 Ripeti con lo stesso vocabolario',
-                newGame: '✨ Nuova partita',
+                repeatGame: '🔄 Opakovat hru',
+                newGame: '✨ Nová hra',
                 removeRowTitle: 'Rimuovi riga',
                 speakTitle: 'Ascolta la pronuncia',
                 speakAria: 'Riproduci pronuncia'
@@ -1520,11 +1538,11 @@
                 scrollTitle: '🎉 Grattis! 🎉',
                 scrollSubtitle: 'Du har öppnat kunskapens kassaskåp.<br>Njut av din framgång!',
                 vocabMastered: '📚 Nyss behärskad ordlista:',
-                copyExcel: '📋 Kopiera till urklipp för ditt kalkylblad',
+                copyExcel: '📋 Zkopírovat pro vložení do tabulky',
                 copySuccess: '✅ Kopierat! Du kan klistra in i Excel (Ctrl+V)',
                 copyFail: '❌ Kopiering misslyckades. Försök manuellt.',
-                repeatGame: '🔄 Upprepa med samma ordförråd',
-                newGame: '✨ Nytt spel',
+                repeatGame: '🔄 Opakovat hru',
+                newGame: '✨ Nová hra',
                 removeRowTitle: 'Ta bort rad',
                 speakTitle: 'Lyssna på uttal',
                 speakAria: 'Spela upp uttal'
@@ -1550,11 +1568,11 @@
                 scrollTitle: '🎉 Parabéns! 🎉',
                 scrollSubtitle: 'Abriste o cofre do conhecimento.<br>Aproveita o teu sucesso!',
                 vocabMastered: '📚 Vocabulário recém-dominado:',
-                copyExcel: '📋 Copiar para a área de transferência da folha de cálculo',
+                copyExcel: '📋 Zkopírovat pro vložení do tabulky',
                 copySuccess: '✅ Copiado! Podes colar no Excel (Ctrl+V)',
                 copyFail: '❌ Falha ao copiar. Tenta manualmente.',
-                repeatGame: '🔄 Repetir com o mesmo vocabulário',
-                newGame: '✨ Novo jogo',
+                repeatGame: '🔄 Opakovat hru',
+                newGame: '✨ Nová hra',
                 removeRowTitle: 'Remover linha',
                 speakTitle: 'Ouvir pronúncia',
                 speakAria: 'Reproduzir pronúncia'
@@ -1580,11 +1598,11 @@
                 scrollTitle: '🎉 Gratulacje! 🎉',
                 scrollSubtitle: 'Otworzyłeś sejf wiedzy.<br>Ciesz się sukcesem!',
                 vocabMastered: '📚 Opanowane słownictwo:',
-                copyExcel: '📋 Kopiuj do schowka arkusza kalkulacyjnego',
+                copyExcel: '📋 Zkopírovat pro vložení do tabulky',
                 copySuccess: '✅ Skopiowano! Możesz wkleić w Excelu (Ctrl+V)',
                 copyFail: '❌ Kopiowanie nie powiodło się. Spróbuj ręcznie.',
-                repeatGame: '🔄 Powtórz z tym samym słownictwem',
-                newGame: '✨ Nowa gra',
+                repeatGame: '🔄 Opakovat hru',
+                newGame: '✨ Nová hra',
                 removeRowTitle: 'Usuń wiersz',
                 speakTitle: 'Posłuchaj wymowy',
                 speakAria: 'Odtwórz wymowę'
@@ -1610,11 +1628,11 @@
                 scrollTitle: '🎉 Вітаємо! 🎉',
                 scrollSubtitle: 'Ти відкрив сейф знань.<br>Насолоджуйся успіхом!',
                 vocabMastered: '📚 Опанована лексика:',
-                copyExcel: '📋 Скопіювати в буфер обміну таблиці',
+                copyExcel: '📋 Zkopírovat pro vložení do tabulky',
                 copySuccess: '✅ Скопійовано! Встав у Excel (Ctrl+V)',
                 copyFail: '❌ Не вдалося скопіювати. Спробуй вручну.',
-                repeatGame: '🔄 Повторити з тим самим словником',
-                newGame: '✨ Нова гра',
+                repeatGame: '🔄 Opakovat hru',
+                newGame: '✨ Nová hra',
                 removeRowTitle: 'Видалити рядок',
                 speakTitle: 'Послухати вимову',
                 speakAria: 'Відтворити вимову'
@@ -2432,8 +2450,11 @@
             overlay.className = 'scroll-overlay';
             overlay.id = 'scroll-overlay';
             overlay.innerHTML = `
-                <div class="scroll" id="scroll">
-                    <div class="scroll-content" id="scroll-content"></div>
+                <div class="scroll-overlay-inner">
+                    <div class="scroll" id="scroll">
+                        <div class="scroll-content" id="scroll-content"></div>
+                    </div>
+                    <div class="button-container-outer" id="button-container-outer"></div>
                 </div>`;
             document.body.appendChild(overlay);
 
@@ -2470,16 +2491,19 @@
                         </button>
                         <div id="copy-feedback" class="copy-hint"></div>
                     </div>
-                    
-                    <div class="button-container">
+                `;
+
+                const outerBtns = document.getElementById('button-container-outer');
+                if (outerBtns) {
+                    outerBtns.innerHTML = `
                         <button class="scroll-button repeat-button" onclick="repeatGame()">
                             ${t('repeatGame')}
                         </button>
                         <button class="scroll-button new-button" onclick="location.reload()">
                             ${t('newGame')}
                         </button>
-                    </div>
-                `;
+                    `;
+                }
 
                 scrollContent.querySelectorAll('.speak-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
