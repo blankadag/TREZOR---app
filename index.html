@@ -1245,7 +1245,7 @@
                     Vyplň alespoň jeden řádek (maximálně 30):
                 </p>
                 <ul>
-                    <li><strong>Ručně</strong> — do každého řádku napiš jedno slovíčko nebo frázi v cizím jazyce a jeho český překlad.</li>
+                    <li><strong>Ručně</strong> — do každého řádku napiš jedno slovíčko nebo frázi <span id="inst-lang-locative">v cizím jazyce</span> a jeho český překlad.</li>
                     <li><strong>Vložením z tabulky</strong> — pokud máš slovíčka uložená v Excelu nebo jiném tabulkovém programu, zkopíruj libovolný výběr (max. 30 řádků, dva sloupce: <em><span id="inst-lang-name">English</span> + Česky</em>) a vlož ho přímo do prvního řádku hry (Ctrl+V). Trezor slovíčka automaticky rozloží do řádků.</li>
                     <li><strong>Ze svých uložených slovníčků</strong> — v sekci <em>Moje slovníčky</em> níže si můžeš slovíčka uložit pro příště a kdykoli je znovu načíst.</li>
                 </ul>
@@ -1715,6 +1715,22 @@
             // Instrukce jsou pevně česky — aktualizuj jen název jazyka v závorce
             const instLangName = document.getElementById('inst-lang-name');
             if (instLangName) instLangName.textContent = t('foreignColumn');
+
+            const LANG_LOCATIVE = {
+                en: 'v angličtině',
+                us: 'v angličtině',
+                de: 'v němčině',
+                es: 've španělštině',
+                fr: 've francouzštině',
+                ru: 'v ruštině',
+                it: 'v italštině',
+                sv: 've švédštině',
+                pt: 'v portugalštině',
+                pl: 'v polštině',
+                uk: 'v ukrajinštině'
+            };
+            const instLangLoc = document.getElementById('inst-lang-locative');
+            if (instLangLoc) instLangLoc.textContent = LANG_LOCATIVE[lang] || 'v cizím jazyce';
 
             const thF = document.getElementById('vocab-th-foreign');
             if (thF) thF.textContent = t('foreignColumn');
