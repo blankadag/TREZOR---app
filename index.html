@@ -1791,25 +1791,34 @@
             return 0;
         }
 
+        function _scoreVoiceForLang(voice, langCode) {
+            const lc = langCode.toLowerCase();
+            const vl = (voice.lang || '').toLowerCase();
+            const base = lc.split('-')[0];
+            let regionScore = 0;
+            if (vl === lc) regionScore = 10;
+            else if (vl.startsWith(lc)) regionScore = 8;
+            else if (lc.includes('-') && vl.startsWith(base + '-') && vl !== lc) regionScore = -5;
+            else if (vl.startsWith(base)) regionScore = 1;
+            return regionScore + _scoreVoice(voice);
+        }
+
         function _findVoice(langCode) {
             const voices = _voicesCache;
             if (!voices.length) return null;
             const lc = langCode.toLowerCase();
             const base = lc.split('-')[0];
 
-            // Filtruj kandidáty podle jazyka (přesná shoda → začátek → základní kód)
             let candidates = voices.filter(x => x.lang.toLowerCase() === lc);
             if (!candidates.length) candidates = voices.filter(x => x.lang.toLowerCase().startsWith(lc));
             if (!candidates.length) candidates = voices.filter(x => x.lang.toLowerCase().startsWith(base + '-'));
             if (!candidates.length) candidates = voices.filter(x => x.lang.toLowerCase() === base);
             if (!candidates.length) return null;
 
-            // Seřaď podle kvality a vrať nejlepší
-            candidates.sort((a, b) => _scoreVoice(b) - _scoreVoice(a));
+            candidates.sort((a, b) => _scoreVoiceForLang(b, langCode) - _scoreVoiceForLang(a, langCode));
             return candidates[0];
         }
 
-        // Vrátí všechny dostupné hlasy pro daný jazyk seřazené podle kvality
         function _getVoicesForLang(langCode) {
             const voices = _voicesCache;
             if (!voices.length) return [];
@@ -1820,7 +1829,7 @@
                 x.lang.toLowerCase().startsWith(lc) ||
                 x.lang.toLowerCase().startsWith(base + '-')
             );
-            candidates.sort((a, b) => _scoreVoice(b) - _scoreVoice(a));
+            candidates.sort((a, b) => _scoreVoiceForLang(b, langCode) - _scoreVoiceForLang(a, langCode));
             return candidates;
         }
 
