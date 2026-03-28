@@ -2162,16 +2162,21 @@
             // Smazání řádku
             if (e.target.classList.contains('remove-row')) {
                 const rowCount = document.querySelectorAll('.english-input').length;
+                const row = e.target.closest('.vocab-row');
+                if (!row) return;
                 if (rowCount > 1) {
-                    const row = e.target.closest('.vocab-row');
-                    if (row) {
-                        row.remove();
-                        updateRowCounter();
-                        updateRowNumbers();
-                        updateLocks();
-                        addRowBtn.disabled = false;
-                    }
+                    row.remove();
+                } else {
+                    // Poslední řádek — nesmaž ho, jen vyčisti obsah
+                    const eng = row.querySelector('.english-input');
+                    const cz  = row.querySelector('.czech-input');
+                    if (eng) eng.value = '';
+                    if (cz)  cz.value  = '';
                 }
+                updateRowCounter();
+                updateRowNumbers();
+                updateLocks();
+                addRowBtn.disabled = false;
             }
 
         });
