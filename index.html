@@ -1913,11 +1913,26 @@
         }
         // ── /SPEECH ─────────────────────────────────────────────────────────────
 
+        let _gameJustPlayed = false;
+
         document.querySelector('.lang-switcher')?.addEventListener('click', (e) => {
             const btn = e.target.closest('.lang-btn');
             if (!btn) return;
             const lang = btn.dataset.lang;
-            if (lang) applyLanguage(lang);
+            if (!lang) return;
+            // Pokud hráč právě dokončil hru a přepíná jazyk, vyčisti tabulku
+            if (_gameJustPlayed && lang !== currentLang) {
+                const tbody = document.getElementById('vocab-rows');
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    for (let i = 0; i < 3; i++) addVocabularyRow();
+                    updateLocks();
+                    updateRowCounter();
+                    updateRowNumbers();
+                }
+            }
+            _gameJustPlayed = false;
+            applyLanguage(lang);
         });
 
         const MAX_ROWS = 30;
@@ -2609,6 +2624,9 @@
             // 7. Scrolluj plynule nahoru na tabulku se slovíčky
             window.scrollTo({ top: 0, behavior: 'smooth' });
             leftSection?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // 8. Označ, že hra právě skončila — přepnutí jazyka vyčistí tabulku
+            _gameJustPlayed = true;
         }
 
 
