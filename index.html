@@ -1838,36 +1838,13 @@
 
         function updateVoiceSelector() {
             const row = document.getElementById('voice-selector-row');
-            const sel = document.getElementById('voice-selector');
-            const lbl = document.getElementById('voice-selector-label');
-
             const targetLang = SPEECH_LANG[currentLang] || 'en-US';
             const voices = _getVoicesForLang(targetLang);
 
-            // Vždy nastav nejlepší dostupný hlas
+            // Vždy nastav nejlepší dostupný hlas, ale selector nikdy nezobrazuj
             _selectedVoice = voices[0] || null;
 
-            if (!row || !sel) return;
-
-            if (voices.length <= 1) {
-                row.style.display = 'none';
-                return;
-            }
-
-            sel.innerHTML = '';
-            voices.forEach((v, i) => {
-                const opt = document.createElement('option');
-                const quality = _scoreVoice(v) >= 3 ? ' ⭐' : _scoreVoice(v) >= 2 ? ' ✓' : '';
-                opt.value = i;
-                opt.textContent = v.name + quality;
-                sel.appendChild(opt);
-            });
-
-            row.style.display = 'flex';
-            sel.onchange = () => { _selectedVoice = voices[parseInt(sel.value)]; };
-
-            const langNames = { en:'EN', us:'EN', de:'DE', es:'ES', fr:'FR', ru:'RU', it:'IT', sv:'SV', pt:'PT', pl:'PL', uk:'UA' };
-            if (lbl) lbl.textContent = '🔊 ' + (langNames[currentLang] || '') + ' hlas:';
+            if (row) row.style.display = 'none';
         }
 
         function speakForeignWord(text) {
