@@ -103,6 +103,48 @@
             scrollbar-width: thin;
         }
 
+        .voice-warning {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(180, 120, 20, 0.45);
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin: 14px auto 0;
+            max-width: 500px;
+            width: 100%;
+            box-sizing: border-box;
+            color: #5a3a10;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .voice-warning-icon {
+            font-size: 15px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .voice-warning details {
+            margin-top: 5px;
+        }
+
+        .voice-warning summary {
+            cursor: pointer;
+            color: #7a4a10;
+            font-size: 12px;
+            user-select: none;
+            font-weight: bold;
+        }
+
+        .voice-warning details p {
+            margin: 6px 0 0 0;
+            font-size: 12px;
+            color: #5a3a10;
+            line-height: 1.6;
+        }
+
         .voice-selector-row {
             display: flex;
             align-items: center;
@@ -1236,6 +1278,7 @@
                 <select class="voice-selector-select" id="voice-selector"></select>
             </div>
 
+
             <h1 class="app-title">🔐 TREZOR</h1>
             <p class="app-subtitle" id="app-subtitle">Efektivní procvičování slovíček a frází interaktivní hrou</p>
             
@@ -1798,7 +1841,6 @@
                 _loadVoices();
                 if (_voicesReady || ++_pollCount > 15) {
                     clearInterval(_pollInterval);
-                    // Selector se zobrazí až při prvním kliknutí na 🔊, ne automaticky
                 }
             }, 200);
         }
@@ -1891,6 +1933,8 @@
         // Jazyky kde přiřazení konkrétního hlasového objektu způsobuje zkomolení
         // — necháme prohlížeč/OS vybrat hlas sám pouze na základě lang tagu
         const LANG_NO_VOICE_ASSIGN = ['sv-SE'];
+
+
 
         function speakForeignWord(text) {
             if (!text || !window.speechSynthesis) return;
@@ -2572,6 +2616,20 @@
                             ${t('copyExcel')}
                         </button>
                         <div id="copy-feedback" class="copy-hint"></div>
+                        <div class="voice-warning">
+                            <span class="voice-warning-icon">⚠️</span>
+                            <div>
+                                Pokud reproduktory mlčí nebo je výslovnost zkreslená, tvé zařízení pravděpodobně nemá nainstalovaný hlas pro tento jazyk.
+                                <details><summary>Jak nainstalovat hlas?</summary>
+                                <p>
+                                <strong>Windows:</strong> Nastavení → Čas a jazyk → Řeč → Přidat hlasy → vyhledej jazyk → nainstaluj.<br>
+                                <strong>Mac:</strong> Předvolby systému → Usnadnění přístupu → Mluvené slovo → Hlas systému → Spravovat hlasy.<br>
+                                <strong>iPhone / iPad:</strong> Nastavení → Usnadnění přístupu → Mluvený obsah → Hlasy → vyber jazyk → stáhni hlas.<br>
+                                <strong>Android:</strong> Nastavení → Obecná správa → Jazyk a zadávání → Převod textu na řeč → nainstaluj hlasová data pro požadovaný jazyk.
+                                </p>
+                                </details>
+                            </div>
+                        </div>
                     </div>
                 `;
 
