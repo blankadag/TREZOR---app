@@ -1676,6 +1676,12 @@
             uk: 'uk-UA'
         };
 
+        // Záložní kódy pro jazyky, které Windows někdy registruje pod jiným tagem
+        const SPEECH_LANG_FALLBACK = {
+            'uk-UA': ['uk', 'uk-UA', 'ru-RU'],
+            'sv-SE': ['sv-SE', 'sv-FI', 'sv']
+        };
+
         let currentLang = 'en';
 
         function getStrings() {
@@ -1798,7 +1804,7 @@
         }
 
         // Kvalitní hlasy mají v názvu tato klíčová slova
-        const QUALITY_KEYWORDS = ['enhanced', 'premium', 'natural', 'neural', 'wavenet', 'studio', 'polyglot'];
+        const QUALITY_KEYWORDS = ['enhanced', 'premium', 'natural', 'neural', 'wavenet', 'studio', 'polyglot', 'online', 'microsoft'];
 
         function _scoreVoice(voice) {
             const name = (voice.name || '').toLowerCase();
@@ -1812,12 +1818,19 @@
         function _scoreVoiceForLang(voice, langCode) {
             const lc = langCode.toLowerCase();
             const vl = (voice.lang || '').toLowerCase();
+            const name = (voice.name || '').toLowerCase();
             const base = lc.split('-')[0];
             let regionScore = 0;
             if (vl === lc) regionScore = 10;
             else if (vl.startsWith(lc)) regionScore = 8;
             else if (lc.includes('-') && vl.startsWith(base + '-') && vl !== lc) regionScore = -5;
             else if (vl.startsWith(base)) regionScore = 1;
+            // Bonus za konkrétní kvalitní hlasy (Microsoft Neural pro švédštinu apod.)
+            const qualityNames = ['hedvig', 'mattias', 'sofie', 'wavenet', 'neural', 'natural', 'premium', 'enhanced'];
+            if (qualityNames.some(k => name.includes(k))) regionScore += 5;
+            // Penalizace za staré Windows hlasy (hazel, zira, david apod.)
+            const badNames = ['hazel', 'zira', 'david', 'mark', 'anna', 'helena'];
+            if (badNames.some(k => name.includes(k))) regionScore -= 3;
             return regionScore + _scoreVoice(voice);
         }
 
@@ -1831,6 +1844,17 @@
             if (!candidates.length) candidates = voices.filter(x => x.lang.toLowerCase().startsWith(lc));
             if (!candidates.length) candidates = voices.filter(x => x.lang.toLowerCase().startsWith(base + '-'));
             if (!candidates.length) candidates = voices.filter(x => x.lang.toLowerCase() === base);
+
+            // Záložní kódy pro jazyky s omezenou podporou na Windows
+            if (!candidates.length && SPEECH_LANG_FALLBACK[langCode]) {
+                for (const fallback of SPEECH_LANG_FALLBACK[langCode]) {
+                    const fb = fallback.toLowerCase();
+                    candidates = voices.filter(x => x.lang.toLowerCase() === fb);
+                    if (!candidates.length) candidates = voices.filter(x => x.lang.toLowerCase().startsWith(fb));
+                    if (candidates.length) break;
+                }
+            }
+
             if (!candidates.length) return null;
 
             candidates.sort((a, b) => _scoreVoiceForLang(b, langCode) - _scoreVoiceForLang(a, langCode));
@@ -1864,6 +1888,10 @@
             if (row) row.style.display = 'none';
         }
 
+        // Jazyky kde přiřazení konkrétního hlasového objektu způsobuje zkomolení
+        // — necháme prohlížeč/OS vybrat hlas sám pouze na základě lang tagu
+        const LANG_NO_VOICE_ASSIGN = ['sv-SE'];
+
         function speakForeignWord(text) {
             if (!text || !window.speechSynthesis) return;
             try {
@@ -1871,18 +1899,21 @@
 
                 const targetLang = SPEECH_LANG[currentLang] || 'en-US';
                 const utterance  = new SpeechSynthesisUtterance(text);
-                utterance.rate   = 0.9;
+                utterance.rate   = 0.85;
 
                 const doSpeak = () => {
-                    // Aktualizuj výběr hlasu (nastaví _selectedVoice na nejlepší dostupný)
-                    updateVoiceSelector();
-                    const voice = _selectedVoice || _findVoice(targetLang);
-                    if (voice) {
-                        utterance.voice = voice;
-                        utterance.lang  = voice.lang;
-                    } else {
-                        // Žádný hlas nenalezen — alespoň nastav lang, prohlížeč zkusí sám
+                    if (LANG_NO_VOICE_ASSIGN.includes(targetLang)) {
+                        // Pouze nastav lang — nechej OS vybrat hlas sám
                         utterance.lang = targetLang;
+                    } else {
+                        updateVoiceSelector();
+                        const voice = _selectedVoice || _findVoice(targetLang);
+                        if (voice) {
+                            utterance.voice = voice;
+                            utterance.lang  = voice.lang;
+                        } else {
+                            utterance.lang = targetLang;
+                        }
                     }
                     window.speechSynthesis.cancel();
                     window.speechSynthesis.speak(utterance);
@@ -2043,6 +2074,7 @@
             });
 
             updateRowCounter();
+            updateRowNumbers();
             updateLocks();
             addRowBtn.disabled = document.querySelectorAll('.english-input').length >= MAX_ROWS;
             return true;
